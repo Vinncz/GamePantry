@@ -1,21 +1,38 @@
 import MultipeerConnectivity
 
-@Observable public class GPGameEventListener : NSObject {
+public typealias GPGameEventListener = GPGameEventListenerSC & GPGameEventListenerProtocol
+
+public protocol GPGameEventListenerProtocol {
+    
+    func heardStateChange ( of peer: MCPeerID, to state: MCSessionState )
+    
+    func heardData ( from peer: MCPeerID, _ data: Data )
+    
+    func heardIncomingStreamRequest ( from peer: MCPeerID, _ stream: InputStream, withContextOf context: String )
+    
+    func heardIncomingResourceTransfer ( from peer: MCPeerID, withContextOf context: String, withProgress progress: Progress )
+    
+    func heardCompletionOfResourceTransfer ( context: String, sender: MCPeerID, savedAt: URL?, withAccompanyingErrorOf: (any Error)? )
+    
+}
+
+public class GPGameEventListenerSC : NSObject {
     
     private var ear : Ear!
     private class Ear : NSObject, MCSessionDelegate {
+        
         weak var attachedTo : GPGameEventListener?
         
         init ( for listener: GPGameEventListener ) {
             self.attachedTo = listener
         }
         
-        func session ( _ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState ) {
-            //
+        func session ( _ session: MCSession, peer peerID: MCPeerID, didChange newState: MCSessionState ) {
+            attachedTo?.heardStateChange( of: peerID, to: newState )
         }
         
         func session ( _ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID ) {
-            attachedTo?.heardData( from: peerID, data: data )
+            attachedTo?.heardData( from: peerID, data )
         }
         
         func session ( _ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID ) {
@@ -23,7 +40,7 @@ import MultipeerConnectivity
         }
         
         func session ( _ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress ) {
-            attachedTo?.heardIncomingResourceRequest(from: peerID, withContextOf: resourceName, withProgressAt: progress)
+            attachedTo?.heardIncomingResourceTransfer(from: peerID, withContextOf: resourceName, withProgress: progress)
         }
         
         func session ( _ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL?, withError error: (any Error)? ) {
@@ -34,41 +51,12 @@ import MultipeerConnectivity
     
     public var listeningTo : Set<MCPeerID> = []
     
-    public override init () {
-        super.init()
-        self.ear = Ear( for: self )
+    public final func wake ( _ instance: GPGameEventListener ) {
+        instance.ear = Ear( for: instance )
     }
     
     public final func portAsDelegate () -> MCSessionDelegate {
         return ear
     }
-    
-    public func heardData ( from peer: MCPeerID, data: Data ) {
-        fatalError("Subclasses must implement `heardDataTransmission`")
-    }
-    
-    public func heardIncomingStreamRequest ( from peer: MCPeerID, _ stream: InputStream, withContextOf context: String ) {
-        fatalError("Subclasses must implement `heardIncomingStreamRequest`")
-    }
-    
-    public func heardIncomingResourceRequest ( from peer: MCPeerID, withContextOf context: String, withProgressAt progress: Progress ) {
-        fatalError("Subclasses must implement `heardIncomingResourceRequest`")
-    }
-    
-    public func heardCompletionOfResourceTransfer ( context: String, sender: MCPeerID, savedAt: URL?, withAccompanyingErrorOf: (any Error)? ) {
-        fatalError("Subclasses must implement `heardResourceTransferComplete")
-    }
         
-}
-
-public class RPSEL : GPGameEventListener {
-    override public func heardData(from peer: MCPeerID, data: Data) {
-        //
-    } 
-}
-
-public class RPSEB : GPGameEventBroadcaster {
-    func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
-        
-    }
 }
