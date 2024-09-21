@@ -4,6 +4,7 @@ import MultipeerConnectivity
     
     private var emitter : Emitter!
     private class Emitter : MCSession {
+        
         weak var attachedTo : GPGameEventBroadcaster?
         
         init ( for broadcaster: GPGameEventBroadcaster ) {
@@ -14,6 +15,7 @@ import MultipeerConnectivity
                 encryptionPreference: .optional
             )
         }
+        
     }
     
     public let broadcastingFor : MCPeerID
