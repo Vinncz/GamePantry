@@ -12,9 +12,9 @@ public protocol GPGameClientBrowserProtocol {
     
 }
 
-public class GPGameClientBrowserSC : NSObject {
+open class GPGameClientBrowserSC : NSObject {
     
-    private var browser: ClientBrowser!
+    private var browser         : ClientBrowser!
     private class ClientBrowser : MCNearbyServiceBrowser, MCNearbyServiceBrowserDelegate {
         
         weak var attachedTo   : GPGameClientBrowser?
@@ -28,6 +28,8 @@ public class GPGameClientBrowserSC : NSObject {
                 peer        : browser.browsingFor, 
                 serviceType : serverServiceType
             )
+            
+            self.delegate = self
         }
         
         func browser ( _ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: any Error ) {
@@ -44,21 +46,30 @@ public class GPGameClientBrowserSC : NSObject {
         
     }
     
-    public let browsingFor       : MCPeerID
-    public let serverServiceType : String
+    public let browsingFor : MCPeerID
+    public let serviceType : String
     
     public init ( serves target: MCPeerID, serviceType: String ) {
-        self.browsingFor       = target
-        self.serverServiceType = serviceType
+        self.browsingFor = target
+        self.serviceType = serviceType
         
         super.init()
     }
     
-    public final func wake ( _ instance: GPGameClientBrowser ) {
+    public final func requestJoin ( to: MCPeerID, via: MCSession ) {
+        self.browser.invitePeer(to, to: via, withContext: nil, timeout: 3)
+    }
+    
+    public final func startBrowsing ( _ instance: GPGameClientBrowser ) {
         instance.browser = ClientBrowser (
             for               : instance, 
-            serverServiceType : instance.serverServiceType
+            serverServiceType : instance.serviceType
         )
+        instance.browser.startBrowsingForPeers()
+    }
+    
+    public final func stopBrowsing ( _ instance: GPGameClientBrowser ) {
+        instance.browser.stopBrowsingForPeers()
     }
     
 }

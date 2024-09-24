@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-@Observable public class GPGameEventBroadcaster : NSObject {
+@Observable open class GPGameEventBroadcaster : NSObject {
     
     private var emitter : Emitter!
     private class Emitter : MCSession {
@@ -12,7 +12,7 @@ import MultipeerConnectivity
             super.init (
                 peer: broadcaster.broadcastingFor, 
                 securityIdentity: nil, 
-                encryptionPreference: .optional
+                encryptionPreference: .none
             )
         }
         
@@ -29,9 +29,13 @@ import MultipeerConnectivity
         self.emitter = Emitter(for: self)
     }
     
-    public final func assistedBy ( _ eventListener: GPGameEventListener ) -> Self {
+    public final func pair ( _ eventListener: GPGameEventListener ) -> Self {
         self.emitter.delegate = eventListener.portAsDelegate()
         return self
+    }
+    
+    public final func help () -> MCSession {
+        return self.emitter
     }
     
     public final func broadcast ( _ event: Data, to: [MCPeerID] ) throws {

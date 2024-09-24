@@ -10,57 +10,71 @@ public protocol GPGameServerAdvertiserProtocol {
     
 }
 
-public class GPGameServerAdvertiserSC : NSObject {
+@Observable open class GPGameServerAdvertiserSC : NSObject {
     
-    private var service : AdvertiserService!
+    private var service : AdvertiserService?
     private class AdvertiserService : MCNearbyServiceAdvertiser, MCNearbyServiceAdvertiserDelegate {
         
         weak var attachedTo : GPGameServerAdvertiser?
         var advertContent   : [String : String]
         
-        init ( for advertiser: GPGameServerAdvertiser, advertContent: [String : String] = [:] ) {
+        init ( for advertiser: GPGameServerAdvertiser, serviceType: String, advertContent: [String : String] = [:] ) {
             self.attachedTo    = advertiser
             self.advertContent = advertContent
-            
+
             super.init (
                 peer          : advertiser.advertisingFor, 
                 discoveryInfo : advertContent, 
-                serviceType   : self.attachedTo?.serviceType ?? ""
+                serviceType   : serviceType
             )
         }
         
         func advertiser ( _ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void ) {
-            attachedTo?.receivedAdmissionRequest(from: peerID, withContext: context, admitterObject: invitationHandler)
+            attachedTo!.receivedAdmissionRequest(from: peerID, withContext: context, admitterObject: invitationHandler)
         }
         
         func advertiser ( _ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: any Error ) {
             attachedTo?.unableToAdvertise(error: error)
+            self.attachedTo?.isAdvertising = false
         }
         
     }
     
-    public let serviceType    : String
     public let advertisingFor : MCPeerID
-    public var advertContent  : [String : String]
+    public let serviceType    : String
+    public var isAdvertising  : Bool
     
-    public init ( serves target: MCPeerID, serviceType: String, withInitialCampaignOf initContent: [String : String] = [:] ) {
+    public init ( serves target: MCPeerID, serviceType: String ) {
         self.serviceType    = serviceType
         self.advertisingFor = target
-        self.advertContent  = initContent
+        self.isAdvertising  = false
         
         super.init()
     }
     
-    public final func loadAdvertContent ( _ content: [String : String] ) -> Self {
-        self.advertContent = content
-        return self
+    public final func startAdvertising ( what content: [String: String], on instance: GPGameServerAdvertiser ) {
+        if let service = instance.service {
+            stopAdvertising(on: instance)
+        }
+        instance.service = nil
+        
+        instance.service = AdvertiserService ( 
+            for: instance,
+            serviceType: instance.serviceType,
+            advertContent: content
+        )
+        if let service = instance.service {
+            service.delegate = self.service
+            service.startAdvertisingPeer()
+            self.isAdvertising = true
+        }
     }
     
-    /// Removes the old advertservice, and replaces it with a new one
-    public final func wake ( _ instance: GPGameServerAdvertiser ) {
-        self.service?.stopAdvertisingPeer()
-        self.service = AdvertiserService( for: instance )
-        self.service?.startAdvertisingPeer()
+    public final func stopAdvertising ( on instance: GPGameServerAdvertiser ) {
+        if let service = instance.service {
+            service.stopAdvertisingPeer()
+            self.isAdvertising = false
+        }
     }
     
 }

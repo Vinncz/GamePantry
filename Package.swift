@@ -27,8 +27,10 @@ let package = Package(
                     "Networks/GPNetworkManager.swift",
                         "Networks/Client/GPGameClientNetworkManager.swift",
                         "Networks/Client/GPGameClientBrowser.swift",
+                        "Networks/Client/GPGameServerDiscoveryReport.swift",
                         "Networks/Server/GPGameServerNetworkManager.swift",
                         "Networks/Server/GPGameServerAdvertiser.swift",
+                        "Networks/Server/GPGameJoinRequest.swift",
             ]
         ),
         .testTarget(

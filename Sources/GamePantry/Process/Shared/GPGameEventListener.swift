@@ -4,7 +4,7 @@ public typealias GPGameEventListener = GPGameEventListenerSC & GPGameEventListen
 
 public protocol GPGameEventListenerProtocol {
     
-    func heardStateChange ( of peer: MCPeerID, to state: MCSessionState )
+    func heardNews ( of: [MCPeerID : MCSessionState] )
     
     func heardData ( from peer: MCPeerID, _ data: Data )
     
@@ -16,11 +16,12 @@ public protocol GPGameEventListenerProtocol {
     
 }
 
-public class GPGameEventListenerSC : NSObject {
+open class GPGameEventListenerSC : NSObject {
     
     private var ear : Ear!
     private class Ear : NSObject, MCSessionDelegate {
         
+        var acquaintances : [MCPeerID: MCSessionState] = [:]
         weak var attachedTo : GPGameEventListener?
         
         init ( for listener: GPGameEventListener ) {
@@ -28,7 +29,8 @@ public class GPGameEventListenerSC : NSObject {
         }
         
         func session ( _ session: MCSession, peer peerID: MCPeerID, didChange newState: MCSessionState ) {
-            attachedTo?.heardStateChange( of: peerID, to: newState )
+            acquaintances[peerID] = newState
+            attachedTo?.heardNews( of: acquaintances )
         }
         
         func session ( _ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID ) {
@@ -51,7 +53,7 @@ public class GPGameEventListenerSC : NSObject {
     
     public var listeningTo : Set<MCPeerID> = []
     
-    public final func wake ( _ instance: GPGameEventListener ) {
+    public final func startListening ( _ instance: GPGameEventListener ) {
         instance.ear = Ear( for: instance )
     }
     
