@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public typealias GPGameClientBrowser = GPGameClientBrowserProtocol & GPGameClientBrowserSC
+public typealias GPGameClientBrowser = GPGameClientBrowserProtocol & GPGameClientBrowserSC & GPRespondsToEvents
 
 public protocol GPGameClientBrowserProtocol {
     
@@ -56,8 +56,10 @@ open class GPGameClientBrowserSC : NSObject {
         super.init()
     }
     
-    public final func requestJoin ( to: MCPeerID, via: MCSession ) {
-        self.browser.invitePeer(to, to: via, withContext: nil, timeout: 3)
+    public final func requestToJoin ( _ who: MCPeerID ) -> ( _ broadcasterSignature: MCSession ) -> Void {
+        return { ba in
+            self.browser.invitePeer(who, to: ba, withContext: nil, timeout: 5)
+        }
     }
     
     public final func startBrowsing ( _ instance: GPGameClientBrowser ) {

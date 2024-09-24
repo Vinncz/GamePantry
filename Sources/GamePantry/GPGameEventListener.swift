@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public typealias GPGameEventListener = GPGameEventListenerSC & GPGameEventListenerProtocol
+public typealias GPGameEventListener = GPGameEventListenerSC & GPGameEventListenerProtocol & GPRespondsToEvents
 
 public protocol GPGameEventListenerProtocol {
     
@@ -18,7 +18,7 @@ public protocol GPGameEventListenerProtocol {
 
 open class GPGameEventListenerSC : NSObject {
     
-    private var ear : Ear!
+    private var ear   : Ear!
     private class Ear : NSObject, MCSessionDelegate {
         
         var acquaintances : [MCPeerID: MCSessionState] = [:]
@@ -50,9 +50,7 @@ open class GPGameEventListenerSC : NSObject {
         }
         
     }
-    
-    public var listeningTo : Set<MCPeerID> = []
-    
+        
     public final func startListening ( _ instance: GPGameEventListener ) {
         instance.ear = Ear( for: instance )
     }

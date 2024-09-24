@@ -1,12 +1,12 @@
 import MultipeerConnectivity
 
-public typealias GPGameServerAdvertiser = GPGameServerAdvertiserSC & GPGameServerAdvertiserProtocol
+public typealias GPGameServerAdvertiser = GPGameServerAdvertiserSC & GPGameServerAdvertiserProtocol & GPRespondsToEvents
 
 public protocol GPGameServerAdvertiserProtocol {
     
     func unableToAdvertise ( error: Error )
     
-    func receivedAdmissionRequest ( from peer: MCPeerID, withContext: Data?, admitterObject: @escaping (Bool, MCSession?) -> Void )
+    func didReceiveAdmissionRequest ( from peer: MCPeerID, withContext: Data?, admitterObject: @escaping (Bool, MCSession?) -> Void )
     
 }
 
@@ -30,7 +30,11 @@ public protocol GPGameServerAdvertiserProtocol {
         }
         
         func advertiser ( _ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void ) {
-            attachedTo!.receivedAdmissionRequest(from: peerID, withContext: context, admitterObject: invitationHandler)
+            attachedTo!.didReceiveAdmissionRequest (
+                from: peerID, 
+                withContext: context, 
+                admitterObject: invitationHandler
+            )
         }
         
         func advertiser ( _ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: any Error ) {
@@ -40,20 +44,22 @@ public protocol GPGameServerAdvertiserProtocol {
         
     }
     
+    public var pendingRequests : [GPGameJoinRequest]
     public let advertisingFor : MCPeerID
     public let serviceType    : String
     public var isAdvertising  : Bool
     
     public init ( serves target: MCPeerID, serviceType: String ) {
-        self.serviceType    = serviceType
-        self.advertisingFor = target
-        self.isAdvertising  = false
+        self.pendingRequests = []
+        self.serviceType     = serviceType
+        self.advertisingFor  = target
+        self.isAdvertising   = false
         
         super.init()
     }
     
     public final func startAdvertising ( what content: [String: String], on instance: GPGameServerAdvertiser ) {
-        if let service = instance.service {
+        if ( instance.service != nil ) {
             stopAdvertising(on: instance)
         }
         instance.service = nil

@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-@Observable open class GPGameEventBroadcaster : NSObject {
+@Observable open class GPGameEventBroadcaster : NSObject, GPRespondsToEvents {
     
     private var emitter : Emitter!
     private class Emitter : MCSession {
@@ -19,9 +19,6 @@ import MultipeerConnectivity
     }
     
     public let broadcastingFor : MCPeerID
-    public var broadcastingTo  : [MCPeerID] {
-        return self.emitter.connectedPeers
-    }
     
     public init ( serves target: MCPeerID ) {
         self.broadcastingFor = target
@@ -34,9 +31,20 @@ import MultipeerConnectivity
         return self
     }
     
-    public final func help () -> MCSession {
-        return self.emitter
+    public final func approve ( _ request : ( _ signed: MCSession ) -> Void ) {
+        request(self.emitter)
     }
+    
+    public func respond ( to event: any GPEvent ) {
+        switch event {
+            case is GPBlacklistedEvent:
+                break
+            default:
+                break
+        }
+    }
+    
+    // MARK: -- Send data over network
     
     public final func broadcast ( _ event: Data, to: [MCPeerID] ) throws {
         try self.emitter.send(event, toPeers: to, with: .reliable)

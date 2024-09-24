@@ -19,4 +19,19 @@ public struct GPGameJoinRequest : Hashable {
         self.requestContext = requestContext
         self.admitterObject = admitterObject
     }
+    
+    public func resolve ( to: Resolve ) -> ( _ broadcasterSignature : MCSession ) -> Void {
+        return { ba in
+            if ( to == .admit ) {
+                self.admitterObject(true, ba)
+            } else {
+                self.admitterObject(false, nil)
+            }
+        }
+    }
+    
+    public enum Resolve {
+        case admit,
+             reject
+    }
 }
