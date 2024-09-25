@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public typealias GPGameEventListener = GPGameEventListenerSC & GPGameEventListenerProtocol & GPRespondsToEvents & GPMediated
+public typealias GPGameEventListener = GPGameEventListenerSC & GPGameEventListenerProtocol
 
 public protocol GPGameEventListenerProtocol {
     
@@ -51,7 +51,6 @@ open class GPGameEventListenerSC : NSObject {
         
 }
 
-/// Extension to enable GPGameEventListener to start listening and be aware of the result of its broadcasted events
 extension GPGameEventListenerSC {
     
     public final func startListening ( _ instance: GPGameEventListener ) {

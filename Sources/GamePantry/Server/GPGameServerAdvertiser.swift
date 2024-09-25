@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public typealias GPGameServerAdvertiser = GPGameServerAdvertiserSC & GPGameServerAdvertiserProtocol & GPRespondsToEvents & GPMediated
+public typealias GPGameServerAdvertiser = GPGameServerAdvertiserSC & GPGameServerAdvertiserProtocol
 
 public protocol GPGameServerAdvertiserProtocol {
     
@@ -31,9 +31,9 @@ public protocol GPGameServerAdvertiserProtocol {
         
         func advertiser ( _ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void ) {
             attachedTo!.didReceiveAdmissionRequest (
-                from: peerID, 
-                withContext: context, 
-                admitterObject: invitationHandler
+                from           : peerID,
+                withContext    : context,
+                admitterObject : invitationHandler
             )
         }
         
@@ -57,6 +57,10 @@ public protocol GPGameServerAdvertiserProtocol {
         
         super.init()
     }
+    
+}
+
+extension GPGameServerAdvertiserSC {
     
     public final func startAdvertising ( what content: [String: String], on instance: GPGameServerAdvertiser ) {
         if ( instance.service != nil ) {

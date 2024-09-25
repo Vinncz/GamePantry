@@ -21,9 +21,9 @@ public struct GPGameJoinRequest : Hashable {
     }
     
     public func resolve ( to: Resolve ) -> ( _ broadcasterSignature : MCSession ) -> Void {
-        return { ba in
+        return { bs in
             if ( to == .admit ) {
-                self.admitterObject(true, ba)
+                self.admitterObject(true, bs)
             } else {
                 self.admitterObject(false, nil)
             }

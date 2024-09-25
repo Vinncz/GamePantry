@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public typealias GPGameClientBrowser = GPGameClientBrowserProtocol & GPGameClientBrowserSC & GPRespondsToEvents & GPMediated
+public typealias GPGameClientBrowser = GPGameClientBrowserProtocol & GPGameClientBrowserSC
 
 public protocol GPGameClientBrowserProtocol {
     
@@ -17,8 +17,8 @@ open class GPGameClientBrowserSC : NSObject {
     private var browser         : ClientBrowser!
     private class ClientBrowser : MCNearbyServiceBrowser, MCNearbyServiceBrowserDelegate {
         
-        weak var attachedTo   : GPGameClientBrowser?
-        let serverServiceType : String
+        weak var attachedTo        : GPGameClientBrowser?
+             let serverServiceType : String
         
         init ( for browser: GPGameClientBrowser, serverServiceType: String ) {
             self.attachedTo        = browser
@@ -56,11 +56,9 @@ open class GPGameClientBrowserSC : NSObject {
         super.init()
     }
     
-    public final func requestToJoin ( _ who: MCPeerID ) -> ( _ broadcasterSignature: MCSession ) -> Void {
-        return { ba in
-            self.browser.invitePeer(who, to: ba, withContext: nil, timeout: 5)
-        }
-    }
+}
+
+extension GPGameClientBrowserSC {
     
     public final func startBrowsing ( _ instance: GPGameClientBrowser ) {
         instance.browser = ClientBrowser (
@@ -72,6 +70,16 @@ open class GPGameClientBrowserSC : NSObject {
     
     public final func stopBrowsing ( _ instance: GPGameClientBrowser ) {
         instance.browser.stopBrowsingForPeers()
+    }
+    
+}
+
+extension GPGameClientBrowserSC {
+    
+    public final func requestToJoin ( _ who: MCPeerID ) -> ( _ broadcasterSignature: MCSession ) -> Void {
+        return { ba in
+            self.browser.invitePeer(who, to: ba, withContext: nil, timeout: 5)
+        }
     }
     
 }

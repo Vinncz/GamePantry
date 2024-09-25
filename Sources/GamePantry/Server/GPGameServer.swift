@@ -1,8 +1,8 @@
 import MultipeerConnectivity
 
-public protocol GPGameServer : NSObject, GPHoldsEvents, GPRespondsToEvents, GPMediator, GPMediated {
+public protocol GPGameServer : NSObject {
     
-    var networkManager : GPGameServerNetworkManager { get set }
+    var networkManager : GPGameServerNetworkManager            { get set }
     var clientsStorage : [ MCPeerID : GPGameTemporaryStorage ] { get set }
     
 }
