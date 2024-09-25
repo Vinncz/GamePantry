@@ -2,7 +2,7 @@ import Foundation
 
 public protocol GPHoldsEvents {
     
-    var log : [GPEvent] { get }
+    var logs : [GPEvent] { get }
     
     func log ( event: GPEvent )
     

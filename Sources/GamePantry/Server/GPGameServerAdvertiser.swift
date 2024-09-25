@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public typealias GPGameServerAdvertiser = GPGameServerAdvertiserSC & GPGameServerAdvertiserProtocol & GPRespondsToEvents
+public typealias GPGameServerAdvertiser = GPGameServerAdvertiserSC & GPGameServerAdvertiserProtocol & GPRespondsToEvents & GPMediated
 
 public protocol GPGameServerAdvertiserProtocol {
     

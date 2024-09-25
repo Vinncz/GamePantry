@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public typealias GPGameClientBrowser = GPGameClientBrowserProtocol & GPGameClientBrowserSC & GPRespondsToEvents
+public typealias GPGameClientBrowser = GPGameClientBrowserProtocol & GPGameClientBrowserSC & GPRespondsToEvents & GPMediated
 
 public protocol GPGameClientBrowserProtocol {
     

@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public typealias GPGameEventListener = GPGameEventListenerSC & GPGameEventListenerProtocol & GPRespondsToEvents
+public typealias GPGameEventListener = GPGameEventListenerSC & GPGameEventListenerProtocol & GPRespondsToEvents & GPMediated
 
 public protocol GPGameEventListenerProtocol {
     

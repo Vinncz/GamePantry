@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public protocol GPNetworkManager {
+public protocol GPNetworkManager : GPMediated {
     
     var acquaintancedParties : [MCPeerID : MCSessionState] { get set }
     
@@ -17,7 +17,7 @@ public protocol GPNetworkManager {
 }
 
 extension GPNetworkManager {
-    public var whitelistedParties   : [MCPeerID : MCSessionState] {
+    public var whitelistedParties : [MCPeerID : MCSessionState] {
         acquaintancedParties.filter { acquaintance, _ in
             !blacklistedParties.contains { blacklisted, _ in
                 acquaintance == blacklisted

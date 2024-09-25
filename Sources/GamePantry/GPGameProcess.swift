@@ -3,8 +3,8 @@
 
 public protocol GPGameProcess {
     
-    var config : GPGameProcessConfiguration { get }
-    var client : GPGameClient { get }
-    var server : GPGameServer { get }
+    var config   : GPGameProcessConfiguration { get }
+    var client   : GPGameClient { get }
+    var server   : GPGameServer { get }
         
 }

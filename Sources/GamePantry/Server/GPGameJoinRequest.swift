@@ -9,7 +9,7 @@ public struct GPGameJoinRequest : Hashable {
         lhs.requestee == rhs.requestee && lhs.requestContext == rhs.requestContext 
     }
     
-    public func hash(into hasher: inout Hasher) {
+    public func hash ( into hasher: inout Hasher ) {
         hasher.combine(requestee)
         hasher.combine(requestContext)
     }

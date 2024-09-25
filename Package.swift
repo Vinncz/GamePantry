@@ -16,6 +16,8 @@ let package = Package(
         .target(
             name: "GamePantry",
             sources: [
+                "Mediator/GPMediator.swift",
+                "Mediator/GPMediated.swift",
                 "Events/GPEvent.swift",
                     "Events/GPHoldsEvents.swift",
                     "Events/GPRespondsToEvents.swift",
