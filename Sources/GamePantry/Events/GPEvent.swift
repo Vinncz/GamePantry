@@ -8,4 +8,6 @@ public protocol GPEvent {
     
     var payload : [ String : Any ]? { get }
     
+    func representation () -> Data 
+    
 }

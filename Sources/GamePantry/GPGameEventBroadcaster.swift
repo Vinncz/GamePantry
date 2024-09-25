@@ -10,22 +10,26 @@ import MultipeerConnectivity
         init ( for broadcaster: GPGameEventBroadcaster ) {
             self.attachedTo = broadcaster
             super.init (
-                peer: broadcaster.broadcastingFor, 
-                securityIdentity: nil, 
-                encryptionPreference: .none
+                peer                 : broadcaster.broadcastingFor,
+                securityIdentity     : nil,
+                encryptionPreference : .optional
             )
         }
         
     }
     
-    public var medID           : UUID
+    public var medID           : String
+    public var mediatedType    : GPMediatedType
     public var mediator        : GPMediator?
     public let broadcastingFor : MCPeerID
     
     public init ( serves target: MCPeerID ) {
         self.broadcastingFor = target
-        self.medID = UUID()
+        self.medID           = GPMediatedType.eventBroadcaster.rawValue
+        self.mediatedType    = .eventBroadcaster
+        
         super.init()
+        
         self.emitter = Emitter(for: self)
     }
     
@@ -50,12 +54,20 @@ import MultipeerConnectivity
         return self
     }
     
-    public final func approve ( _ request : ( _ signed: MCSession ) -> Void ) {
+    public final func approve ( _ request : @escaping ( _ signed: MCSession ) -> Void ) {
         request(self.emitter)
+    }
+    
+    public func register ( with mediator: any GPMediator ) -> () -> any GPMediated {
+        return {
+            self.mediator = mediator
+            return self
+        }
     }
     
 }
 
+/// Extension to enable GPGameEventBroadcaster to respond to events
 extension GPGameEventBroadcaster : GPRespondsToEvents {
     
     public func respond ( to event: any GPEvent ) {

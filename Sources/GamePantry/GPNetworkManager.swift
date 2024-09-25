@@ -2,9 +2,9 @@ import MultipeerConnectivity
 
 public protocol GPNetworkManager : GPMediated {
     
-    var acquaintancedParties : [MCPeerID : MCSessionState] { get set }
+    var acquaintancedParties : [ MCPeerID : MCSessionState ] { get set }
     
-    var blacklistedParties   : [MCPeerID : MCSessionState] { get set }
+    var blacklistedParties   : [ MCPeerID : MCSessionState ] { get set }
     
     var gameProcessConfig    : GPGameProcessConfiguration { get }
     
@@ -17,11 +17,13 @@ public protocol GPNetworkManager : GPMediated {
 }
 
 extension GPNetworkManager {
-    public var whitelistedParties : [MCPeerID : MCSessionState] {
+    
+    public var whitelistedParties : [ MCPeerID : MCSessionState ] {
         acquaintancedParties.filter { acquaintance, _ in
             !blacklistedParties.contains { blacklisted, _ in
                 acquaintance == blacklisted
             }
         }
     }
+    
 }

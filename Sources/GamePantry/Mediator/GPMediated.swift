@@ -2,20 +2,12 @@ import Foundation
 
 public protocol GPMediated {
     
-    var medID : UUID { get }
+    var medID        : String { get }
     
-    var mediator : GPMediator? { get set }
+    var mediatedType : GPMediatedType { get }
     
-}
-
-extension GPMediated {
+    var mediator     : GPMediator? { get set }
     
-    public var name : String {
-        let processInfo = ProcessInfo.processInfo
-        let trimmedHostName = processInfo.hostName.split(separator: ".").last ?? ""
-        let identifier = "\(trimmedHostName)-\(medID.uuidString)"
-        
-        return  identifier
-    }
+    func register ( with mediator: GPMediator ) -> () -> GPMediated
     
 }
