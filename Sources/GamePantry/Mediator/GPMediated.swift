@@ -1,5 +1,6 @@
 import Foundation
 
+@available(*, deprecated)
 public protocol GPMediated {
     
     var medID        : String { get }

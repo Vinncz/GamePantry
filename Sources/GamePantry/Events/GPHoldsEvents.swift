@@ -1,5 +1,4 @@
-import Foundation
-
+@available(*, deprecated)
 public protocol GPHoldsEvents {
     
     var logs : [GPEvent] { get }
