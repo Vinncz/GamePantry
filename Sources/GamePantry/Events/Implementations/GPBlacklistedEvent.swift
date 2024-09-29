@@ -3,13 +3,15 @@ import MultipeerConnectivity
 public struct GPBlacklistedEvent : GPEvent {
     
     public let who         : MCPeerID
+    public let reason      : String
     
     public let purpose     : String
     public let time        : Date
-    public let payload     : [ String : Any ]?
+    public let payload     : [String: Any]?
     
-    public init ( who: MCPeerID, payload: [ String : Any ]? ) {
+    public init ( who: MCPeerID, reason: String, payload: [String: Any]? ) {
         self.who         = who
+        self.reason      = reason
         
         self.purpose     = "An event that marks a peer as blacklisted."
         self.time        = .now

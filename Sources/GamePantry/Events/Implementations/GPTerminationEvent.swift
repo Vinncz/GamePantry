@@ -7,7 +7,7 @@ public struct GPTerminationEvent : GPEvent {
 
     public let purpose : String
     public let time    : Date
-    public let payload : [String : Any]?
+    public let payload : [String: Any]?
     
     public init ( who: MCPeerID, validOn: Date, payload: [String: Any]? ) {
         self.who     = who
