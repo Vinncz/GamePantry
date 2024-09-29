@@ -1,6 +1,8 @@
 # GamePantry
 
-Helps you to build client-server LAN multiplayer game; complete with event-driven flow if need be.
+The powerful framework to build client-server, LAN multiplayer game at speed; with event-driven architecture in mind. 
+
+GamePantry works on abstraction and builds upon convenience; enabling you to code these out, without learning the core concepts first.
 
 ## Documentation
 
