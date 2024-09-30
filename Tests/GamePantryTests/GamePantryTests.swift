@@ -8,56 +8,46 @@ struct GamePantryTests {
     @Test func eventRouterRoutingTest () async throws {
         
         let router = GPEventRouter()
+        var subscription = Set<AnyCancellable>()
         
-        class TestEvent: GPEvent {
-            var purpose: String
-            
-            var time: Date
-            
-            var payload: [String : Any]?
-            
-            init () {
-                self.payload = nil
-                self.purpose = "Test"
-                self.time = .now
-            }
+        let blacklistedEvent = GPBlacklistedEvent (
+            who: MCPeerID(displayName: "Test"),
+            reason: "Test",
+            payload: nil
+        )
+        let acquaintanceEvent = GPAcquaintanceEvent (
+            who: MCPeerID(displayName: "Test"),
+            newState: .connected,
+            payload: nil
+        )
+        
+        let blacklistedSubject = PassthroughSubject<GPBlacklistedEvent, Never>()
+        router.registerSubject(for: GPBlacklistedEvent.self, subject: blacklistedSubject)
+        
+        let subject = router.subject(for: GPBlacklistedEvent.self)?.sink { event in
+            print("received blacklisted event: \(event)")
         }
         
-        class AnotherTestEvent: GPEvent {
-            var purpose: String
-            
-            var time: Date
-            
-            var payload: [String : Any]?
-            
-            init () {
-                self.payload = nil
-                self.purpose = "AnotherTest"
-                self.time = .now
-            }
+        router.route(blacklistedEvent)
+        blacklistedSubject.send(blacklistedEvent)
+                
+        let acquaintancePublisher = Just(acquaintanceEvent)
+        subscription.insert (
+            router.registerPublisher(for: GPAcquaintanceEvent.self, publisher: acquaintancePublisher) { modifyThePublisherHere in
+                modifyThePublisherHere
+                    .throttle(for: .seconds(1), scheduler: RunLoop.main, latest: true)
+                    .eraseToAnyPublisher()
+            }!
+        )
+        
+        let subject2 = router.subject(for: GPAcquaintanceEvent.self)?.sink { event in
+            print("Received event: \(event.purpose) on: \(event.time)")
+        }.store(in: &subscription)
+        
+        for _ in 1...10 {
+            #expect(router.route(acquaintanceEvent) == true)
         }
         
-        let subject = PassthroughSubject<TestEvent, Never>()
-        router.registerSubject(for: TestEvent.self, subject: subject)
-        
-        let anotherSubject = PassthroughSubject<AnotherTestEvent, Never>()
-        router.registerSubject(for: AnotherTestEvent.self, subject: anotherSubject)
-        
-        let subscription = router.subject(for: AnotherTestEvent.self)?.sink { event in
-            #expect(type(of: event) == AnotherTestEvent.self, "Mismatched event type")
-            #expect(event.purpose == "AnotherTest")
-            
-            print("received event: \(event)")
-        }
-        
-        let isRouteSuccessful = router.route(AnotherTestEvent())
-        #expect(isRouteSuccessful == true)
-        
-        #expect(router.route(TestEvent()) == true)
-
-        defer {
-            subscription?.cancel()
-            
-        }
+//        #expect(subscription.isEmpty, "subscription should be empty")
     }
 }
