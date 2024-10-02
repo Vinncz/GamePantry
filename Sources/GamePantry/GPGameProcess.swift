@@ -1,5 +1,6 @@
-@_exported import MultipeerConnectivity
+@_exported import Combine
 @_exported import Foundation
+@_exported import MultipeerConnectivity
 
 public protocol GPGameProcess {
     

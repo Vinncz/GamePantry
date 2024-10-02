@@ -7,7 +7,7 @@ public class GPAnySubject <Output, Failure: Error> : Subject {
     private let _forwardingSubscriptionClosure : ( Subscription                    ) -> Void
     private let _forwardingSubscriberClosure   : ( AnySubscriber<Output, Failure>  ) -> Void
     
-    public init <S: Subject> (_ subject: S) where S.Output == Output, S.Failure == Failure {
+    public init <S: Subject> ( _ subject: S ) where S.Output == Output, S.Failure == Failure {
         _forwardingOutputClosure = { value in
             subject.send(value)
         }
@@ -34,6 +34,7 @@ public class GPAnySubject <Output, Failure: Error> : Subject {
     }
     
     public func send ( subscription: Subscription ) {
+        subscription.request(.max(<#T##value: Int##Int#>))
         _forwardingSubscriptionClosure(subscription)
     }
     
