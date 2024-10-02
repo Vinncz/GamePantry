@@ -1,6 +1,7 @@
 import MultipeerConnectivity
 
 public struct GPGameJoinRequest : Hashable {
+    
     public var requestee      : MCPeerID
     public var requestContext : Data?
     public var admitterObject : ( _ resolveToAdmit: Bool, MCSession? ) -> Void
@@ -34,4 +35,5 @@ public struct GPGameJoinRequest : Hashable {
         case admit,
              reject
     }
+    
 }
