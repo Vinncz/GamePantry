@@ -34,6 +34,7 @@ public class GPAnySubject <Output, Failure: Error> : Subject {
     }
     
     public func send ( subscription: Subscription ) {
+        subscription.request(.max(<#T##value: Int##Int#>))
         _forwardingSubscriptionClosure(subscription)
     }
     
