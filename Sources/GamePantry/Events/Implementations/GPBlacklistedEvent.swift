@@ -1,8 +1,8 @@
-public class GPBlacklistedEvent : GPEvent {
+public struct GPBlacklistedEvent : GPEvent {
     
-    public let purpose     : String
-    public let time        : Date
-    public let payload     : [String: Any]
+    public let purpose : String
+    public let time    : Date
+    public let payload : [String: Any]
     
     public init ( _ payload: [String: Any] ) {
         self.purpose = "An event that marks a peer as blacklisted"

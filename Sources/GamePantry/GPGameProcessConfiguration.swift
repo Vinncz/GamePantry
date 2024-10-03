@@ -1,6 +1,6 @@
 import Foundation
 
-public struct GPGameProcessConfiguration {
+public struct GPGameProcessConfiguration : Sendable {
     
     public let debugEnabled : Bool
     public let gameName     : String
