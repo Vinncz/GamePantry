@@ -1,4 +1,4 @@
-public class GPTerminationEvent : GPEvent {
+public struct GPTerminationEvent : GPEvent {
     
     public let purpose : String
     public let time    : Date

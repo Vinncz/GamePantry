@@ -1,4 +1,4 @@
-public class GPAnyEvent : GPEvent {
+public struct GPAnyEvent : GPEvent {
     
     public var purpose : String
     public var time    : Date
@@ -10,7 +10,7 @@ public class GPAnyEvent : GPEvent {
         self.payload = payload
     }
     
-    public convenience init ( _ preparedEvent: GPEvent ) {
+    public init ( _ preparedEvent: GPEvent ) {
         self.init (
             purpose : preparedEvent.purpose,
             time    : preparedEvent.time,

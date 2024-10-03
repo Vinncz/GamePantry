@@ -5,6 +5,10 @@ import os
 
 struct GamePantryTests {
     
+    @Test func testAja () async throws {
+        let abc = Abc()
+    }
+    
     @Test func eventRouterSubjectRegistration () async throws {
         
         let router  = GPEventRouter()
@@ -14,17 +18,17 @@ struct GamePantryTests {
         
         // MARK: -- Phase I • A subject for an empty key
         #expect (
-            router.registerSubject(for: GPAnyEvent.self, subject) == true,
+            router.openChannel(for: GPAnyEvent.self) == true,
             "registration must succeed"
         )
         
         #expect (
-            router.registerSubject(for: GPAnyEvent.self, subject) == false,
+            router.openChannel(for: GPAnyEvent.self) == false,
             "overwriting an existing subject for a given event type must fail"
         )
         
         #expect (
-            router.forceRegisterSubject(for: GPAnyEvent.self, subject) == true,
+            router.forceOpenChannel(for: GPAnyEvent.self) == true,
             "force registration will only return true when it overwrites an existing subject"
         )
         
@@ -40,72 +44,24 @@ struct GamePantryTests {
         let anotherSubject = CurrentValueSubject<GPAnyEvent, Never>(GPAnyEvent(acquaintanceEvent))
         
         #expect (
-            router.registerSubject(for: GPAnyEvent.self, anotherSubject) == false,
+            router.openChannel(for: GPAnyEvent.self) == false,
             "tried to register a subject for an event type that is already registered"
         )
 
         router.stopRouting(router.allKeys())
         
         #expect (
-            router.registerSubject(for: GPAnyEvent.self, anotherSubject) == true,
+            router.openChannel(for: GPAnyEvent.self) == true,
             "after the router stopped routing, all registered subjects must be re-registered, or they'll lose their spot alongside their subscribers"
         )
         
         #expect (
-            router.forceRegisterSubject(for: GPAnyEvent.self, anotherSubject) == true,
+            router.forceOpenChannel(for: GPAnyEvent.self) == true,
             "force registration will only return true when it overwrites an existing subject"
         )
         
         router.stopRouting(router.allKeys())
                 
-    }
-    
-    @Test func eventRouterPublisherRegister () async throws {
-        
-        let router       = GPEventRouter()
-        var subscription = Set<AnyCancellable>()
-        
-        typealias ae = GPAcquaintanceEvent.PayloadKeys
-        let acquaintanceEvent = GPAcquaintanceEvent([
-            ae.subject.rawValue           : "Myself",
-            ae.acquaintanceState.rawValue : "Connected",
-            ae.updatedAt.rawValue         : "\(Date.now)"
-        ])
-        
-        let publisher = Future<GPAnyEvent, Never> { promise in
-            promise(.success(GPAnyEvent(acquaintanceEvent)))
-        }
-        
-        #expect (
-            subscription.insert (
-                router.registerPublisher(for: GPAnyEvent.self, publisher) { modifier in
-                    modifier
-                        .filter { val in
-                            val.time < .now
-                        }
-                        .eraseToAnyPublisher()
-                }!
-            ).inserted == true,
-            "publisher must be attached to one of the subject's stream"
-        )
-        
-        let anotherPublisher = Just<GPAnyEvent>(GPAnyEvent(acquaintanceEvent))
-        
-        #expect (
-            subscription.insert (
-                router.registerPublisher(for: GPAnyEvent.self, anotherPublisher) { modifier in
-                    modifier
-                        .filter { val in
-                            val.time < .now
-                        }
-                        .eraseToAnyPublisher()
-                }!
-            ).inserted == true,
-            "publisher must be attached to one of the subject's stream, even though it might overlaps with other publishers"
-        )
-        
-        router.stopRouting(router.allKeys())
-        
     }
     
     @Test func eventRouterSubjectRouteBroadcast () async throws {
@@ -127,7 +83,7 @@ struct GamePantryTests {
         ])
         
         #expect (
-            router.registerSubject(for: GPAcquaintanceEvent.self, subject) == true,
+            router.openChannel(for: GPAcquaintanceEvent.self) == true,
             "subject registration must succeed"
         )
         
@@ -138,27 +94,17 @@ struct GamePantryTests {
             te.effectiveTime.rawValue     : "\(formatter.string(from: .now))"
         ])
         
-        let publisher = Future<GPTerminationEvent, Never> { promise in
-            promise(.success(terminationEvent))
-        }
-        
         #expect (
-            subscription.insert (
-                router.registerPublisher(for: GPTerminationEvent.self, publisher) { modify in
-                    modify
-                        .eraseToAnyPublisher()
-                }!
-            ).inserted == true,
-            "publisher registration must succeed"
+            router.openChannel(for: GPTerminationEvent.self) == true,
+            "subject registration must succeed"
         )
-        
         
         
         // MARK: -- Phase II • Subscribing to the router
         #expect (
             subscription.insert (
-                router.subject(for: GPAcquaintanceEvent.self)!.sink { val in
-                    print("received from subject typed: \(type(of: val)), as \(val.representedAsData().toString()!)")
+                router.subscribe(to: GPAcquaintanceEvent.self)!.sink { val in
+                    print("received from subject typed: \(type(of: val)), as \((val as! GPAcquaintanceEvent).representedAsData().toString()!)")
                 }
             ).inserted == true,
             "attaching a subscription to the subject @router must succeed"
@@ -166,8 +112,8 @@ struct GamePantryTests {
         
         #expect (
             subscription.insert (
-                router.subject(for: GPTerminationEvent.self)!.sink { val in
-                    print("received from publisher typed: \(type(of: val)), as \(val.representedAsData().toString()!)")
+                router.subscribe(to: GPTerminationEvent.self)!.sink { val in
+                    print("received from publisher typed: \(type(of: val)), as \((val as! GPTerminationEvent).representedAsData().toString()!)")
                 }
             ).inserted == true,
             "attaching subscription to the publisher @router must succeed"

@@ -1,4 +1,4 @@
-public class GPAcquaintanceEvent : GPEvent {
+public struct GPAcquaintanceEvent : GPEvent {
     
     public var purpose : String
     public var time    : Date

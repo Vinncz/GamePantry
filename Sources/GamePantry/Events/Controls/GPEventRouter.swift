@@ -11,19 +11,19 @@ open class GPEventRouter {
 
 extension GPEventRouter {
     
-    public func registerSubject <T: GPEvent, S: Subject> ( for eventType: T.Type, _ subject: S ) -> Bool where S.Output == T, S.Failure == Never {
-        guard self.subject(for: eventType) as GPAnySubject<T, Never>? == nil else { return false }
+    public func openChannel ( for eventType: GPEvent.Type ) -> Bool {
+        guard self.subscribe(to: eventType) as GPAnySubject<GPEvent, Never>? == nil else { return false }
         
         let key        = generateKey(for: eventType)
-        let anySubject = GPAnySubject(subject)
+        let anySubject = GPAnySubject(PassthroughSubject<GPEvent, Never>())
         
         self.subjects[key] = anySubject
         return true
     }
     
-    public func subject <T: GPEvent> ( for eventType: T.Type ) -> GPAnySubject<T, Never>? {
+    public func subscribe ( to eventType: GPEvent.Type ) -> GPAnySubject<GPEvent, Never>? {
         let key: ObjectIdentifier = generateKey(for: eventType)
-        guard let subject = subjects[key] as? GPAnySubject<T, Never> else { 
+        guard let subject = subjects[key] as? GPAnySubject<GPEvent, Never> else { 
             return nil 
         }
         
@@ -34,34 +34,11 @@ extension GPEventRouter {
 
 extension GPEventRouter {
     
-    public func registerPublisher <T: GPEvent, P: Publisher> ( for eventType: T.Type, _ publisher: P, _ applyOperators: (AnyPublisher<T, P.Failure>) -> AnyPublisher<T, P.Failure> ) -> AnyCancellable? where P.Output == T, P.Failure == Never {        
-        let modifiedPublisher = applyOperators(publisher.eraseToAnyPublisher())
-        
-        if let existingSubject = subject(for: eventType) {
-            return modifiedPublisher.sink { value in
-                existingSubject.send(value)
-            }
-        }
-        
-        if registerSubject ( for: eventType, PassthroughSubject<T, Never>() ) {
-            return modifiedPublisher.sink { value in
-                self.subject(for: eventType)?.send(value)
-            }
-        }
-        
-        return nil
-    }
-    
-}
-
-extension GPEventRouter {
-    
-    public func route <T: GPEvent> ( _ event: T ) -> Bool {
-        let key: ObjectIdentifier = generateKey(for: T.self)
-        guard let subject = self.subjects[key] as? GPAnySubject<T, Never> else { 
+    public func route ( _ event: GPEvent ) -> Bool {
+        let key: ObjectIdentifier = generateKey(for: type(of: event))
+        guard let subject = self.subjects[key] as? GPAnySubject<GPEvent, Never> else { 
             return false
         }
-        
         subject.send(event)
         return true
     }
@@ -70,19 +47,20 @@ extension GPEventRouter {
 
 extension GPEventRouter {
     
-    private func generateKey <T: GPEvent> ( for eventType: T.Type ) -> ObjectIdentifier {
-        return ObjectIdentifier(eventType)
+    private func generateKey ( for eventType: GPEvent.Type ) -> ObjectIdentifier {
+        let key = ObjectIdentifier(eventType)
+        return key
     }
     
-    public func forceRegisterSubject <T: GPEvent, S: Subject> ( for eventType: T.Type, _ subject: S ) -> Bool where S.Output == T, S.Failure == Never {
+    public func forceOpenChannel ( for eventType: GPEvent.Type ) -> Bool {
         let key: ObjectIdentifier = generateKey(for: eventType)
         
-        if self.subject(for: eventType) != nil {
-            self.subjects[key] = GPAnySubject(subject)
+        if self.subscribe(to: eventType) != nil {
+            self.subjects[key] = GPAnySubject(PassthroughSubject<GPEvent, Never>())
             return true
         }
         
-        self.subjects[key] = GPAnySubject(subject)
+        self.subjects[key] = GPAnySubject(PassthroughSubject<GPEvent, Never>())
         return false
     }
     
