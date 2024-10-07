@@ -1,39 +1,61 @@
-public struct GPBlacklistedEvent : GPEvent {
+import MultipeerConnectivity
+
+public struct GPBlacklistedEvent : GPSendableEvent {
     
-    public let purpose : String
-    public let time    : Date
-    public let payload : [String: Any]
+    public let subject : String
+    public let reason  : String
+        
+    public let id             : String = "GPBlacklistedEvent"
+    public let purpose        : String = "Marks a peer as blacklisted, and why you should avoid communicating with them"
+    public let instanciatedOn : Date   = .now
     
-    public init ( _ payload: [String: Any] ) {
-        self.purpose = "An event that marks a peer as blacklisted"
-        self.time    = .now
+    public var payload : [String: Any]
+    
+    public init ( subject: String, reason: String, payload: [String: Any] = [:] ) {
+        self.subject = subject
+        self.reason  = reason
         self.payload = payload
     }
     
 }
 
-extension GPBlacklistedEvent : GPEasilyReadableEventPayloadKeys {
+extension GPBlacklistedEvent /* : GPHoldsPayload */ {
     
     public enum PayloadKeys : String, CaseIterable {
-        case subject       = "subject",
-             reason        = "causeOfBlacklist",
-             effectiveTime = "effectiveTime"
+        case subject = "subject",
+             reason  = "reason"
     }
     
-    public func value ( for key: PayloadKeys ) -> Any {
-        return self.payload[key.rawValue]!
+    public func value ( for key: PayloadKeys ) -> Any? {
+        payload[key.rawValue]
     }
     
 }
 
-extension GPBlacklistedEvent : GPRepresentableAsData {
+extension GPBlacklistedEvent /* : GPRepresentableAsData */ {
     
     public func representedAsData () -> Data {
         return dataFrom {
-            PayloadKeys.allCases.reduce(into: [String: String]()) { (result, key) in
-                result[key.rawValue] = self.payload[key.rawValue] as? String ?? ""
-            }
+            [
+                PayloadKeys.subject.rawValue : self.subject,
+                PayloadKeys.reason.rawValue  : self.reason
+            ]
         } ?? Data()
+    }
+    
+}
+
+extension GPBlacklistedEvent /* : GPConstructibleFromPayload */ {
+    
+    public static func construct ( from payload: [String: Any] ) -> GPBlacklistedEvent? {
+        guard 
+            let subject = payload[PayloadKeys.subject.rawValue] as? String,
+            let reason  = payload[PayloadKeys.reason.rawValue] as? String 
+        else {
+            return nil
+        }
+        
+        return GPBlacklistedEvent(subject: subject, reason: reason, payload: payload)
     }
     
 }

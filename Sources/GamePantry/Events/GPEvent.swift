@@ -1,9 +1,9 @@
 public protocol GPEvent {
     
-    var purpose : String        { get }
-
-    var time    : Date          { get }
+    var id             : String { get }
     
-    var payload : [String: Any] { get }
+    var purpose        : String { get }
+    
+    var instanciatedOn : Date   { get }
     
 }

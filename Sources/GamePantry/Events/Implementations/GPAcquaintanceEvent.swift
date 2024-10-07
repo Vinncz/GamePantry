@@ -1,39 +1,17 @@
+import MultipeerConnectivity
+
 public struct GPAcquaintanceEvent : GPEvent {
     
-    public var purpose : String
-    public var time    : Date
-    public var payload : [String: Any]
-
-    public init ( _ payload: [String: Any] ) {
-        self.purpose = "An event which indicates that the state of one's acquaintance has changed"
-        self.time    = .now
-        self.payload = payload
-    }
+    public let subject : MCPeerID
+    public let status  : MCSessionState
     
-}
-
-extension GPAcquaintanceEvent : GPEasilyReadableEventPayloadKeys {
+    public let id             : String = "GPAcquaintanceEvent"
+    public let purpose        : String = "Marks a change in acquaintance status"
+    public let instanciatedOn : Date   = .now
     
-    public enum PayloadKeys : String, CaseIterable {
-        case subject           = "subject",
-             acquaintanceState = "acquaintanceState",
-             updatedAt         = "updatedAt"
-    }
-    
-    public func value ( for key: PayloadKeys ) -> Any {
-        return self.payload[key.rawValue]!
-    }
-    
-}
-
-extension GPAcquaintanceEvent : GPRepresentableAsData {
-    
-    public func representedAsData () -> Data {
-        return dataFrom {
-            PayloadKeys.allCases.reduce(into: [String: String]()) { (result, key) in
-                result[key.rawValue] = self.payload[key.rawValue] as? String ?? ""
-            }
-        } ?? Data()
+    public init ( subject: MCPeerID, status: MCSessionState ) {
+        self.subject = subject
+        self.status  = status
     }
     
 }

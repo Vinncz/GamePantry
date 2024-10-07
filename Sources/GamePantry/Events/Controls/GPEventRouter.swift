@@ -64,13 +64,6 @@ extension GPEventRouter {
         return false
     }
     
-    public func stopRouting <T: GPEvent> ( _ eventType: [T.Type] ) {
-        eventType.forEach { type in
-            let key: ObjectIdentifier = generateKey(for: type)
-            self.subjects.removeValue(forKey: key)
-        }
-    }
-    
     public func stopRouting ( _ eventType: [ObjectIdentifier] ) {
         eventType.forEach { key in
             self.subjects.removeValue(forKey: key)

@@ -1,39 +1,61 @@
-public struct GPTerminationEvent : GPEvent {
+import MultipeerConnectivity
+
+public struct GPTerminationEvent : GPSendableEvent {
     
-    public let purpose : String
-    public let time    : Date
-    public let payload : [String: Any]
+    public let subject : String
+    public let reason  : String
+        
+    public let id             : String = "GPTerminationEvent"
+    public let purpose        : String = "A nuclear way that signals a peer to disconnect themselves"
+    public let instanciatedOn : Date   = .now
     
-    public init ( _ payload: [String: Any] ) {
-        self.purpose = "An event that marks the termination of relationship of a game client with the server its connected to"
-        self.time    = .now
+    public var payload : [String: Any] = [:]
+    
+    public init ( subject: String, reason: String, payload: [String: Any] = [:] ) {
+        self.subject = subject
+        self.reason  = reason
         self.payload = payload
     }
     
 }
 
-extension GPTerminationEvent : GPEasilyReadableEventPayloadKeys {
+extension GPTerminationEvent /* : GPHoldsPayload */ {
     
     public enum PayloadKeys : String, CaseIterable {
-        case subject           = "subject",
-             terminationReason = "causeOfTermination",
-             effectiveTime     = "effectiveTime"
+        case subject = "subject",
+             reason  = "reason"
     }
     
-    public func value ( for key: PayloadKeys ) -> Any {
-        return self.payload[key.rawValue]!
+    public func value ( for key: PayloadKeys ) -> Any? {
+        payload[key.rawValue]
     }
     
 }
 
-extension GPTerminationEvent : GPRepresentableAsData {
+extension GPTerminationEvent /* : GPRepresentableAsData */ {
     
     public func representedAsData () -> Data {
         return dataFrom {
-            PayloadKeys.allCases.reduce(into: [String: String]()) { (result, key) in
-                result[key.rawValue] = String(describing: self.payload[key.rawValue]!)
-            }
+            [
+                PayloadKeys.subject.rawValue : self.subject,
+                PayloadKeys.reason.rawValue  : self.reason
+            ]
         } ?? Data()
+    }
+    
+}
+
+extension GPTerminationEvent /* : GPConstructibleFromPayload */ {
+    
+    public static func construct ( from payload: [String: Any] ) -> GPTerminationEvent? {
+        guard
+            let subject = payload[PayloadKeys.subject.rawValue] as? String,
+            let reason  = payload[PayloadKeys.reason.rawValue] as? String 
+        else {
+            return nil
+        }
+        
+        return GPTerminationEvent(subject: subject, reason: reason, payload: payload)
     }
     
 }

@@ -5,16 +5,9 @@ import os
 
 struct GamePantryTests {
     
-    @Test func testAja () async throws {
-        let abc = Abc()
-    }
-    
     @Test func eventRouterSubjectRegistration () async throws {
         
-        let router  = GPEventRouter()
-        let subject = PassthroughSubject<GPAnyEvent, Never>()
-        
-        
+        let router  = GPEventRouter()        
         
         // MARK: -- Phase I • A subject for an empty key
         #expect (
@@ -35,13 +28,10 @@ struct GamePantryTests {
         
         
         // MARK: -- Phase II • Different subject instance for the same key
-        typealias ae = GPAcquaintanceEvent.PayloadKeys
-        let acquaintanceEvent = GPAcquaintanceEvent([
-            ae.subject.rawValue           : "Myself",
-            ae.acquaintanceState.rawValue : "Connected",
-            ae.updatedAt.rawValue         : "\(Date.now)"
-        ])
-        let anotherSubject = CurrentValueSubject<GPAnyEvent, Never>(GPAnyEvent(acquaintanceEvent))
+        typealias ae = GPAcquaintanceEvent
+        let acquaintanceEvent = GPAcquaintanceEvent(
+            subject: MCPeerID(displayName: "Myself"), status: .connected
+        )
         
         #expect (
             router.openChannel(for: GPAnyEvent.self) == false,
@@ -74,13 +64,9 @@ struct GamePantryTests {
 
         
         // MARK: -- Phase I • Setting things up
-        let subject = PassthroughSubject<GPAcquaintanceEvent, Never>()
-        typealias ae = GPAcquaintanceEvent.PayloadKeys
-        let acquaintanceEvent = GPAcquaintanceEvent([
-            ae.subject.rawValue           : "Myself",
-            ae.acquaintanceState.rawValue : "Connected",
-            ae.updatedAt.rawValue         : "\(formatter.string(from: .now))"
-        ])
+        let acquaintanceEvent = GPAcquaintanceEvent (
+            subject: MCPeerID(displayName: "Myself"), status: .connected
+        )
         
         #expect (
             router.openChannel(for: GPAcquaintanceEvent.self) == true,
@@ -88,11 +74,9 @@ struct GamePantryTests {
         )
         
         typealias te = GPTerminationEvent.PayloadKeys
-        let terminationEvent = GPTerminationEvent([
-            te.subject.rawValue           : "You",
-            te.terminationReason.rawValue : "Misbehaved",
-            te.effectiveTime.rawValue     : "\(formatter.string(from: .now))"
-        ])
+        let terminationEvent = GPTerminationEvent (
+            subject: "You", reason: "Griefing"
+        )
         
         #expect (
             router.openChannel(for: GPTerminationEvent.self) == true,
@@ -104,7 +88,7 @@ struct GamePantryTests {
         #expect (
             subscription.insert (
                 router.subscribe(to: GPAcquaintanceEvent.self)!.sink { val in
-                    print("received from subject typed: \(type(of: val)), as \((val as! GPAcquaintanceEvent).representedAsData().toString()!)")
+                    print("received from subject typed: \(type(of: val)), as \((val as! GPAcquaintanceEvent))")
                 }
             ).inserted == true,
             "attaching a subscription to the subject @router must succeed"
@@ -144,6 +128,31 @@ struct GamePantryTests {
             )
         }
         
+    }
+    
+    @Test func constructEventFromPayload () async throws {
+        let bevent = GPBlacklistedEvent (
+            subject: "You", reason: "Ugly"
+        )
+        
+        // from client (as host) to the server
+        let beventAsData = bevent.representedAsData()
+        
+        // server receives the event in form of Data
+        let decodedData = fromData(data: beventAsData)!
+        
+        // GPGameEventListener should be able to reconstruct it back to the complete GPEvent from
+        let reconstructedBevent = GPBlacklistedEvent.construct(from: decodedData)
+        
+        // Check if all attributes are correct
+        #expect(
+            reconstructedBevent?.subject == "You",
+            "Decoded subject is different from what's expected"
+        )
+        #expect(
+            reconstructedBevent?.reason == "Ugly",
+            "Decoded reason is different from what's expected"
+        )
     }
     
 }

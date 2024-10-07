@@ -1,5 +1,3 @@
-import MultipeerConnectivity
-
 public protocol GPNetworkManager {
 
     var gameProcessConfig    : GPGameProcessConfiguration { get }
