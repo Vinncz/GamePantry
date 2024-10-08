@@ -1,1 +1,1 @@
-public typealias GPSendableEvent = GPEvent & GPHoldsPayload & GPRepresentableAsData & GPConstructibleFromPayload
+public typealias GPSendableEvent = GPEvent & GPHoldsPayload & GPRepresentableAsData
