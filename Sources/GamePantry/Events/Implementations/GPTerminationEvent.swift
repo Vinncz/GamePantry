@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public struct GPTerminationEvent : GPSendableEvent {
+public struct GPTerminationEvent : GPEvent, GPSendableEvent, GPReceivableEvent {
     
     public let subject : String
     public let reason  : String

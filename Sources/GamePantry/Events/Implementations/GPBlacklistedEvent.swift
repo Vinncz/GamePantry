@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-public struct GPBlacklistedEvent : GPSendableEvent {
+public struct GPBlacklistedEvent : GPEvent, GPSendableEvent, GPReceivableEvent {
     
     public let subject : String
     public let reason  : String

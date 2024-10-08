@@ -32,6 +32,7 @@ let package = Package(
                         "Events/Traits/GPConstructibleFromPayload.swift",
                         "Events/Traits/GPHoldsPayload.swift",
                         "Events/Traits/GPSendableEvent.swift",
+                        "Events/Traits/GPReceivableEvent.swift",
                 "Utilities/GPRepresentableAsData.swift",
                 "Utilities/fdataFrom.swift",
                 "Utilities/ffromData.swift",
