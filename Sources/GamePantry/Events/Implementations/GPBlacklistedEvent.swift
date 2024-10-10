@@ -1,5 +1,3 @@
-import MultipeerConnectivity
-
 public struct GPBlacklistedEvent : GPEvent, GPSendableEvent, GPReceivableEvent {
     
     public let subject : String
@@ -9,7 +7,7 @@ public struct GPBlacklistedEvent : GPEvent, GPSendableEvent, GPReceivableEvent {
     public let purpose        : String = "Marks a peer as blacklisted, and why you should avoid communicating with them"
     public let instanciatedOn : Date   = .now
     
-    public var payload : [String: Any]
+    public var payload : [String: Any] = [:]
     
     public init ( subject: String, reason: String, payload: [String: Any] = [:] ) {
         self.subject = subject
@@ -22,7 +20,8 @@ public struct GPBlacklistedEvent : GPEvent, GPSendableEvent, GPReceivableEvent {
 extension GPBlacklistedEvent /* : GPHoldsPayload */ {
     
     public enum PayloadKeys : String, CaseIterable {
-        case subject = "subject",
+        case eventId = "eventId",
+             subject = "subject",
              reason  = "reason"
     }
     
@@ -37,6 +36,7 @@ extension GPBlacklistedEvent /* : GPRepresentableAsData */ {
     public func representedAsData () -> Data {
         return dataFrom {
             [
+                PayloadKeys.eventId.rawValue : self.id,
                 PayloadKeys.subject.rawValue : self.subject,
                 PayloadKeys.reason.rawValue  : self.reason
             ]
@@ -49,6 +49,7 @@ extension GPBlacklistedEvent /* : GPConstructibleFromPayload */ {
     
     public static func construct ( from payload: [String: Any] ) -> GPBlacklistedEvent? {
         guard 
+            "GPBlacklistedEvent" == payload[PayloadKeys.eventId.rawValue] as? String,
             let subject = payload[PayloadKeys.subject.rawValue] as? String,
             let reason  = payload[PayloadKeys.reason.rawValue] as? String 
         else {

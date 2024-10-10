@@ -1,11 +1,11 @@
 import MultipeerConnectivity
 
-public struct GPAcquaintanceEvent : GPEvent {
+public struct GPAcquaintanceStatusUpdateEvent : GPEvent {
     
     public let subject : MCPeerID
     public let status  : MCSessionState
     
-    public let id             : String = "GPAcquaintanceEvent"
+    public let id             : String = "GPAcquaintanceStatusUpdateEvent"
     public let purpose        : String = "Marks a change in acquaintance status"
     public let instanciatedOn : Date   = .now
     

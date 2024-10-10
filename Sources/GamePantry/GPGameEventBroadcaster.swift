@@ -31,8 +31,8 @@ import MultipeerConnectivity
 
 extension GPGameEventBroadcaster {
     
-    public final func broadcast ( _ event: Data, to: [MCPeerID] ) throws {
-        try self.emitter.send(event, toPeers: to, with: .reliable)
+    public final func broadcast ( _ event: Data, to recipients: [MCPeerID] ) throws {
+        try self.emitter.send(event, toPeers: recipients, with: .reliable)
     }
     
     public final func send ( resourceAt: URL, to: MCPeerID, context: String, eventHandler: (((any Error)?) -> Void)? ) -> Progress? {
@@ -54,6 +54,14 @@ extension GPGameEventBroadcaster {
     
     public final func approve ( _ request : @escaping ( _ signed: MCSession ) -> Void ) {
         request(self.emitter)
+    }
+    
+}
+
+extension GPGameEventBroadcaster {
+    
+    public final func getPeers () -> [MCPeerID] {
+        return self.emitter.connectedPeers
     }
     
 }

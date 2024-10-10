@@ -3,7 +3,7 @@ import Combine
 import GamePantry
 import os
 
-struct GamePantryTests {
+struct EventDrivenTests {
     
     @Test func eventRouterSubjectRegistration () async throws {
         
@@ -28,8 +28,8 @@ struct GamePantryTests {
         
         
         // MARK: -- Phase II • Different subject instance for the same key
-        typealias ae = GPAcquaintanceEvent
-        let acquaintanceEvent = GPAcquaintanceEvent(
+        typealias ae = GPAcquaintanceStatusUpdateEvent
+        let acquaintanceEvent = GPAcquaintanceStatusUpdateEvent(
             subject: MCPeerID(displayName: "Myself"), status: .connected
         )
         
@@ -64,22 +64,22 @@ struct GamePantryTests {
 
         
         // MARK: -- Phase I • Setting things up
-        let acquaintanceEvent = GPAcquaintanceEvent (
+        let acquaintanceEvent = GPAcquaintanceStatusUpdateEvent (
             subject: MCPeerID(displayName: "Myself"), status: .connected
         )
         
         #expect (
-            router.openChannel(for: GPAcquaintanceEvent.self) == true,
+            router.openChannel(for: GPAcquaintanceStatusUpdateEvent.self) == true,
             "subject registration must succeed"
         )
         
-        typealias te = GPTerminationEvent.PayloadKeys
-        let terminationEvent = GPTerminationEvent (
+        typealias te = GPTerminatedEvent.PayloadKeys
+        let terminationEvent = GPTerminatedEvent (
             subject: "You", reason: "Griefing"
         )
         
         #expect (
-            router.openChannel(for: GPTerminationEvent.self) == true,
+            router.openChannel(for: GPTerminatedEvent.self) == true,
             "subject registration must succeed"
         )
         
@@ -87,8 +87,8 @@ struct GamePantryTests {
         // MARK: -- Phase II • Subscribing to the router
         #expect (
             subscription.insert (
-                router.subscribe(to: GPAcquaintanceEvent.self)!.sink { val in
-                    print("received from subject typed: \(type(of: val)), as \((val as! GPAcquaintanceEvent))")
+                router.subscribe(to: GPAcquaintanceStatusUpdateEvent.self)!.sink { val in
+                    print("received from subject typed: \(type(of: val)), as \((val as! GPAcquaintanceStatusUpdateEvent))")
                 }
             ).inserted == true,
             "attaching a subscription to the subject @router must succeed"
@@ -96,8 +96,8 @@ struct GamePantryTests {
         
         #expect (
             subscription.insert (
-                router.subscribe(to: GPTerminationEvent.self)!.sink { val in
-                    print("received from publisher typed: \(type(of: val)), as \((val as! GPTerminationEvent).representedAsData().toString()!)")
+                router.subscribe(to: GPTerminatedEvent.self)!.sink { val in
+                    print("received from publisher typed: \(type(of: val)), as \((val as! GPTerminatedEvent).representedAsData().toString()!)")
                 }
             ).inserted == true,
             "attaching subscription to the publisher @router must succeed"
