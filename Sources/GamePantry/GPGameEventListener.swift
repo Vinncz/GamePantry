@@ -14,6 +14,8 @@ public protocol GPGameEventListenerProtocol {
     
     func heardCompletionOfResourceTransfer ( context: String, sender: MCPeerID, savedAt: URL?, withAccompanyingErrorOf: (any Error)? )
     
+    func receivedCertificate ( _ certificate: [Any]?, from peer: MCPeerID, _ certificateHandler: @escaping (Bool) -> Void )
+    
 }
 
 open class GPGameEventListenerSC : NSObject, ObservableObject {
@@ -47,6 +49,9 @@ open class GPGameEventListenerSC : NSObject, ObservableObject {
             attachedTo?.heardCompletionOfResourceTransfer(context: resourceName, sender: peerID, savedAt: localURL, withAccompanyingErrorOf: error)
         }
         
+        func session ( _ session: MCSession, didReceiveCertificate certificate: [Any]?, fromPeer peerID: MCPeerID, certificateHandler: @escaping (Bool) -> Void ) {
+            attachedTo?.receivedCertificate(certificate, from: peerID, certificateHandler)
+        }
     }
         
 }

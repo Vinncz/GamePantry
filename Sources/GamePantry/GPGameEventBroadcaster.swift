@@ -12,7 +12,7 @@ open class GPGameEventBroadcaster : NSObject, ObservableObject {
             super.init (
                 peer                 : broadcaster.broadcastingFor,
                 securityIdentity     : nil,
-                encryptionPreference : .optional
+                encryptionPreference : .none
             )
         }
         

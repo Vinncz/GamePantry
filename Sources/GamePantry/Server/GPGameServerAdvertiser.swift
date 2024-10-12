@@ -30,7 +30,7 @@ open class GPGameServerAdvertiserSC : NSObject, ObservableObject {
         }
         
         func advertiser ( _ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void ) {
-            attachedTo!.didReceiveAdmissionRequest (
+            attachedTo?.didReceiveAdmissionRequest (
                 from           : peerID,
                 withContext    : context,
                 admitterObject : invitationHandler
