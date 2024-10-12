@@ -1,3 +1,4 @@
+import Combine
 import MultipeerConnectivity
 
 public typealias GPGameClientBrowser = GPGameClientBrowserProtocol & GPGameClientBrowserSC
@@ -12,7 +13,7 @@ public protocol GPGameClientBrowserProtocol {
     
 }
 
-open class GPGameClientBrowserSC : NSObject {
+open class GPGameClientBrowserSC : NSObject, ObservableObject {
     
     private var browser         : ClientBrowser!
     private class ClientBrowser : MCNearbyServiceBrowser, MCNearbyServiceBrowserDelegate {
@@ -46,12 +47,15 @@ open class GPGameClientBrowserSC : NSObject {
         
     }
     
+    @Published public var discoveredServers : [GPGameServerDiscoveryReport]
     public let browsingFor : MCPeerID
     public let serviceType : String
     
     public init ( serves target: MCPeerID, serviceType: String ) {
         self.browsingFor = target
         self.serviceType = serviceType
+        
+        self.discoveredServers = []
         
         super.init()
     }

@@ -5,7 +5,7 @@
 public protocol GPGameProcess {
     
     var config   : GPGameProcessConfiguration { get }
-    var client   : GPGameClient { get }
-    var server   : GPGameServer { get }
+    var client   : any GPGameClient { get }
+    var server   : any GPGameServer { get }
         
 }

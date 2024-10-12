@@ -2,8 +2,7 @@ import Combine
 
 open class GPEventRouter {
     
-    private var subjects     : [ObjectIdentifier: Any]         = [:]
-    private var cancellables : Set<AnyCancellable>             = [ ]
+    private var subjects : [ObjectIdentifier: Any] = [:]
     
     public init () {}
     

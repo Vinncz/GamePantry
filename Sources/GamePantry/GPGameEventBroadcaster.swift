@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-@Observable open class GPGameEventBroadcaster : NSObject {
+open class GPGameEventBroadcaster : NSObject, ObservableObject {
     
     private var emitter : Emitter!
     private class Emitter : MCSession {

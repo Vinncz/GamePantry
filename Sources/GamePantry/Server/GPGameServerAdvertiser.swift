@@ -10,7 +10,7 @@ public protocol GPGameServerAdvertiserProtocol {
     
 }
 
-@Observable open class GPGameServerAdvertiserSC : NSObject {
+open class GPGameServerAdvertiserSC : NSObject, ObservableObject {
     
     private var service : AdvertiserService?
     private class AdvertiserService : MCNearbyServiceAdvertiser, MCNearbyServiceAdvertiserDelegate {
@@ -44,16 +44,17 @@ public protocol GPGameServerAdvertiserProtocol {
         
     }
     
-    public var pendingRequests : [GPGameJoinRequest]
+    @Published public var pendingRequests : [GPGameJoinRequest]
     public let advertisingFor : MCPeerID
     public let serviceType    : String
     public var isAdvertising  : Bool
     
     public init ( serves target: MCPeerID, serviceType: String ) {
-        self.pendingRequests = []
         self.serviceType     = serviceType
         self.advertisingFor  = target
         self.isAdvertising   = false
+        
+        self.pendingRequests = []
         
         super.init()
     }
