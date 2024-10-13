@@ -14,11 +14,11 @@ public protocol GPGameEventListenerProtocol {
     
     func heardCompletionOfResourceTransfer ( context: String, sender: MCPeerID, savedAt: URL?, withAccompanyingErrorOf: (any Error)? )
     
-    func receivedCertificate ( _ certificate: [Any]?, from peer: MCPeerID, _ certificateHandler: @escaping (Bool) -> Void )
+    func heardCertificate ( from peer: MCPeerID, _ certificate: [Any]?, _ certificateHandler: @escaping (Bool) -> Void )
     
 }
 
-open class GPGameEventListenerSC : NSObject, ObservableObject {
+@Observable open class GPGameEventListenerSC : NSObject, ObservableObject {
     
     private var ear   : Ear!
     private class Ear : NSObject, MCSessionDelegate {
@@ -30,11 +30,11 @@ open class GPGameEventListenerSC : NSObject, ObservableObject {
         }
         
         func session ( _ session: MCSession, peer peerID: MCPeerID, didChange newState: MCSessionState ) {
-            attachedTo?.heardNews( of: peerID, to: newState )
+            attachedTo?.heardNews(of: peerID, to: newState)
         }
         
         func session ( _ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID ) {
-            attachedTo?.heardData( from: peerID, data )
+            attachedTo?.heardData(from: peerID, data)
         }
         
         func session ( _ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID ) {
@@ -50,7 +50,7 @@ open class GPGameEventListenerSC : NSObject, ObservableObject {
         }
         
         func session ( _ session: MCSession, didReceiveCertificate certificate: [Any]?, fromPeer peerID: MCPeerID, certificateHandler: @escaping (Bool) -> Void ) {
-            attachedTo?.receivedCertificate(certificate, from: peerID, certificateHandler)
+            attachedTo?.heardCertificate(from: peerID, certificate, certificateHandler)
         }
     }
         

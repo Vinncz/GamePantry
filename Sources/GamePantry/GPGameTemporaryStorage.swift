@@ -1,5 +1,5 @@
 import Foundation
 
-public protocol GPGameTemporaryStorage : ObservableObject {
+public protocol GPGameTemporaryStorage {
     
 }

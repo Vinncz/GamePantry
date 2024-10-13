@@ -1,8 +1,8 @@
 import Foundation
 
-public protocol GPGameClient : NSObject, ObservableObject {
+public protocol GPGameClient : NSObject {
     
-    var networkManager : GPGameClientNetworkManager { get set }
-    var localStorage   : any GPGameTemporaryStorage { get set }
+    var networkManager : any GPGameClientNetworkManager { get set }
+    var localStorage   : any GPGameTemporaryStorage     { get set }
     
 }

@@ -13,7 +13,7 @@ public protocol GPGameClientBrowserProtocol {
     
 }
 
-open class GPGameClientBrowserSC : NSObject, ObservableObject {
+@Observable open class GPGameClientBrowserSC : NSObject, ObservableObject {
     
     private var browser         : ClientBrowser!
     private class ClientBrowser : MCNearbyServiceBrowser, MCNearbyServiceBrowserDelegate {
@@ -47,7 +47,8 @@ open class GPGameClientBrowserSC : NSObject, ObservableObject {
         
     }
     
-    @Published public var discoveredServers : [GPGameServerDiscoveryReport]
+    public var discoveredServers : [GPGameServerDiscoveryReport] { didSet { discoveredServers$ = discoveredServers } }
+    
     public let browsingFor : MCPeerID
     public let serviceType : String
     
@@ -55,10 +56,13 @@ open class GPGameClientBrowserSC : NSObject, ObservableObject {
         self.browsingFor = target
         self.serviceType = serviceType
         
-        self.discoveredServers = []
+        self.discoveredServers  = []
+        self.discoveredServers$ = []
         
         super.init()
     }
+    
+    @ObservationIgnored @Published public var discoveredServers$ : [GPGameServerDiscoveryReport]
     
 }
 

@@ -1,5 +1,3 @@
-import Foundation
-
 public struct GPGameProcessConfiguration : Sendable {
     
     public let debugEnabled : Bool
