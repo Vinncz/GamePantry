@@ -4,6 +4,8 @@ open class GPEventRouter {
     
     private var subjects : [ObjectIdentifier: Any] = [:]
     
+    public init () { }
+    
 }
 
 extension GPEventRouter {
