@@ -18,7 +18,7 @@ public protocol GPGameEventListenerProtocol {
     
 }
 
-@Observable open class GPGameEventListenerSC : NSObject, ObservableObject {
+open class GPGameEventListenerSC : NSObject {
     
     private var ear   : Ear!
     private class Ear : NSObject, MCSessionDelegate {
