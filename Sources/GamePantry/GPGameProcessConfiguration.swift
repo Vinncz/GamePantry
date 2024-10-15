@@ -8,7 +8,7 @@ public struct GPGameProcessConfiguration : Sendable {
     public let maxPlayerCount : Int
     public let commLimit      : Int
     
-    public init ( debugEnabled: Bool, gameName: String, gameVersion: String, serviceType: String, minPlayerCount: Int = 2, maxPlayerCount: Int = 7, commLimit: Int ) {
+    public init ( debugEnabled: Bool, gameName: String, gameVersion: String, serviceType: String, minPlayerCount: Int = 2, maxPlayerCount: Int = 7, commLimit: Int = .max ) {
         guard maxPlayerCount <= 7 else {
             fatalError("Max player count must be less than or equal to 7")
         }
@@ -19,7 +19,7 @@ public struct GPGameProcessConfiguration : Sendable {
         self.serviceType    = serviceType
         self.minPlayerCount = minPlayerCount
         self.maxPlayerCount = maxPlayerCount
-        self.commLimit      = .max
+        self.commLimit      = commLimit
     }
     
 }
