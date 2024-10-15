@@ -10,7 +10,7 @@ public protocol GPGameServerAdvertiserProtocol {
     
 }
 
-@Observable open class GPGameServerAdvertiserSC : NSObject, ObservableObject {
+open class GPGameServerAdvertiserSC : NSObject, ObservableObject {
     
     private var service : AdvertiserService?
     private class AdvertiserService : MCNearbyServiceAdvertiser, MCNearbyServiceAdvertiserDelegate {
@@ -35,6 +35,7 @@ public protocol GPGameServerAdvertiserProtocol {
                 withContext    : context,
                 admitterObject : invitationHandler
             )
+            self.attachedTo?.isAdvertising = true 
         }
         
         func advertiser ( _ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: any Error ) {
@@ -44,8 +45,8 @@ public protocol GPGameServerAdvertiserProtocol {
         
     }
     
-    public var pendingRequests : [GPGameJoinRequest] { didSet { pendingRequests$ = pendingRequests } }
-    public var isAdvertising  : Bool                 { didSet { isAdvertising$ = isAdvertising } }
+    @Published public var pendingRequests : [GPGameJoinRequest]
+    @Published public var isAdvertising   : Bool
     
     public let advertisingFor : MCPeerID
     public let serviceType    : String
@@ -53,18 +54,11 @@ public protocol GPGameServerAdvertiserProtocol {
     public init ( serves target: MCPeerID, serviceType: String ) {
         self.serviceType     = serviceType
         self.advertisingFor  = target
-        
         self.isAdvertising  = false
-        self.isAdvertising$ = false
-        
         self.pendingRequests  = []
-        self.pendingRequests$ = []
         
         super.init()
     }
-    
-    @ObservationIgnored @Published public var pendingRequests$ : [GPGameJoinRequest]
-    @ObservationIgnored @Published public var isAdvertising$   : Bool
     
 }
 
