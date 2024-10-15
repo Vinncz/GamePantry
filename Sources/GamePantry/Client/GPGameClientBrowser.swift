@@ -50,13 +50,13 @@ open class GPGameClientBrowserSC : NSObject, ObservableObject {
     @Published public var discoveredServers : [GPGameServerDiscoveryReport] 
     
     public let browsingFor : MCPeerID
-    public let serviceType : String
+    public let gameProcessConfiguration : GPGameProcessConfiguration
     
-    public init ( serves target: MCPeerID, serviceType: String ) {
-        self.browsingFor = target
-        self.serviceType = serviceType
+    public init ( serves target: MCPeerID, configuredWith: GPGameProcessConfiguration ) {
+        self.browsingFor              = target
+        self.gameProcessConfiguration = configuredWith
         
-        self.discoveredServers  = []
+        self.discoveredServers = []
         
         super.init()
     }
@@ -68,7 +68,7 @@ extension GPGameClientBrowserSC {
     public final func startBrowsing ( _ instance: GPGameClientBrowser ) {
         instance.browser = ClientBrowser (
             for               : instance, 
-            serverServiceType : instance.serviceType
+            serverServiceType : instance.gameProcessConfiguration.serviceType
         )
         instance.browser.startBrowsingForPeers()
     }
@@ -82,8 +82,8 @@ extension GPGameClientBrowserSC {
 extension GPGameClientBrowserSC {
     
     public final func requestToJoin ( _ who: MCPeerID ) -> ( _ broadcasterSignature: MCSession ) -> Void {
-        return { ba in
-            self.browser.invitePeer(who, to: ba, withContext: nil, timeout: 5)
+        return { [weak self] ba in
+            self?.browser.invitePeer(who, to: ba, withContext: nil, timeout: self?.gameProcessConfiguration.timeout ?? 10)
         }
     }
     

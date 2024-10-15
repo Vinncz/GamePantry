@@ -49,13 +49,13 @@ open class GPGameServerAdvertiserSC : NSObject, ObservableObject {
     @Published public var isAdvertising   : Bool
     
     public let advertisingFor : MCPeerID
-    public let serviceType    : String
+    public let gameProcessConfiguration : GPGameProcessConfiguration
     
-    public init ( serves target: MCPeerID, serviceType: String ) {
-        self.serviceType     = serviceType
-        self.advertisingFor  = target
-        self.isAdvertising  = false
-        self.pendingRequests  = []
+    public init ( serves target: MCPeerID, configuredWith: GPGameProcessConfiguration ) {
+        self.gameProcessConfiguration = configuredWith
+        self.advertisingFor           = target
+        self.isAdvertising            = false
+        self.pendingRequests          = []
         
         super.init()
     }
@@ -72,7 +72,7 @@ extension GPGameServerAdvertiserSC {
         
         instance.service = AdvertiserService ( 
             for: instance,
-            serviceType: instance.serviceType,
+            serviceType: instance.gameProcessConfiguration.serviceType,
             advertContent: content
         )
         if let service = instance.service {
