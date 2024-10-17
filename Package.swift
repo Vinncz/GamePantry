@@ -45,6 +45,7 @@ let package = Package(
                 "Utilities/ffromData.swift",
                 "Extensions/Data.swift",
                 "Extensions/GPAnySubject.swift",
+                "Extensions/MCSessionState.swift",
                 "GPGameProcess.swift",
                 "GPGameTemporaryStorage.swift",
                 "GPGameProcessConfiguration.swift",

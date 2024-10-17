@@ -63,6 +63,7 @@ extension GPGameEventListenerSC {
     }
     
     public final func portAsDelegate () -> MCSessionDelegate {
+        guard (ear != nil) else { fatalError("Did you forget to call startListening(_:) on \(self)?") } 
         return ear
     }
     
