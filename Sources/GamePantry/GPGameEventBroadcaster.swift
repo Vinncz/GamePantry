@@ -43,6 +43,10 @@ extension GPGameEventBroadcaster {
         return try self.emitter.startStream(withName: context, toPeer: to)
     }
     
+    public final func ceaseCommunication () {
+        self.emitter.disconnect()
+    }
+    
 }
 
 extension GPGameEventBroadcaster {
