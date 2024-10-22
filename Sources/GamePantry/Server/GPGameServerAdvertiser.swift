@@ -85,6 +85,8 @@ extension GPGameServerAdvertiserSC {
     public final func stopAdvertising ( on instance: GPGameServerAdvertiser ) {
         if let service = instance.service {
             service.stopAdvertisingPeer()
+            instance.service = nil
+            instance.pendingRequests.removeAll()
             self.isAdvertising = false
         }
     }

@@ -12,7 +12,7 @@ open class GPGameEventBroadcaster : NSObject {
             super.init (
                 peer                 : broadcaster.broadcastingFor,
                 securityIdentity     : nil,
-                encryptionPreference : .none
+                encryptionPreference : .optional
             )
         }
         
@@ -66,6 +66,19 @@ extension GPGameEventBroadcaster {
     
     public final func getPeers () -> [MCPeerID] {
         return self.emitter.connectedPeers
+    }
+    
+}
+extension GPGameEventBroadcaster {
+    
+    public final func disconnect () {
+        self.emitter.disconnect()
+    }
+    
+    public final func reset () {
+        let existingDelegate  = self.emitter.delegate
+        self.emitter          = Emitter(for: self)
+        self.emitter.delegate = existingDelegate
     }
     
 }

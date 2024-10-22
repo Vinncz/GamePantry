@@ -15,7 +15,7 @@ public protocol GPGameClientBrowserProtocol {
 
 open class GPGameClientBrowserSC : NSObject, ObservableObject {
     
-    private var browser         : ClientBrowser!
+    private var browser         : ClientBrowser?
     private class ClientBrowser : MCNearbyServiceBrowser, MCNearbyServiceBrowserDelegate {
         
         weak var attachedTo        : GPGameClientBrowser?
@@ -66,15 +66,22 @@ open class GPGameClientBrowserSC : NSObject, ObservableObject {
 extension GPGameClientBrowserSC {
     
     public final func startBrowsing ( _ instance: GPGameClientBrowser ) {
+        if ( instance.browser != nil ) {
+            instance.browser?.stopBrowsingForPeers()
+            instance.browser = nil
+            instance.discoveredServers.removeAll()
+        }
+        
         instance.browser = ClientBrowser (
             for               : instance, 
             serverServiceType : instance.gameProcessConfiguration.serviceType
         )
-        instance.browser.startBrowsingForPeers()
+        instance.browser?.startBrowsingForPeers()
     }
     
     public final func stopBrowsing ( _ instance: GPGameClientBrowser ) {
-        instance.browser.stopBrowsingForPeers()
+        instance.browser?.stopBrowsingForPeers()
+        instance.browser = nil
     }
     
 }
@@ -83,8 +90,18 @@ extension GPGameClientBrowserSC {
     
     public final func requestToJoin ( _ who: MCPeerID ) -> ( _ broadcasterSignature: MCSession ) -> Void {
         return { [weak self] ba in
-            self?.browser.invitePeer(who, to: ba, withContext: nil, timeout: self?.gameProcessConfiguration.timeout ?? 10)
+            self?.browser?.invitePeer(who, to: ba, withContext: nil, timeout: self?.gameProcessConfiguration.timeout ?? 10)
         }
+    }
+    
+}
+
+extension GPGameClientBrowserSC {
+    
+    public final func reset () {
+        self.browser?.stopBrowsingForPeers()
+        self.browser = nil
+        self.discoveredServers.removeAll()
     }
     
 }
