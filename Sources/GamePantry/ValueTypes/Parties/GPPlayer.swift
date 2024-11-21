@@ -4,13 +4,13 @@ import MultipeerConnectivity
 public protocol GPPlayer : Equatable, Hashable, AnyObject {
     
     /// The address of the player, using which you can send things over the network to them.
-    var playerAddress         : MCPeerID { get }
+    var playerAddress         : MCPeerID { get set }
     
     /// The display name of the player.
-    var playerDisplayName     : String { get }
+    var playerDisplayName     : String { get set }
     
     /// The state of the player's connection.
-    var playerConnectionState : GPPlayerState { get }
+    var playerConnectionState : GPPlayerState { get set }
     
     /// The metadata of the player.
     var playerMetadata        : [String: String]? { get set }
@@ -46,6 +46,14 @@ extension GPPlayer {
     
     public static func == ( lhs: any GPPlayer, rhs: any GPPlayer ) -> Bool {
         return lhs.playerAddress == rhs.playerAddress
+    }
+    
+}
+
+extension GPPlayer {
+    
+    public func hash ( into hasher: inout Hasher ) {
+        hasher.combine(playerAddress)
     }
     
 }
