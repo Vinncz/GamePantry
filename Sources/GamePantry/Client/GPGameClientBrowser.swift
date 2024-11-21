@@ -1,6 +1,20 @@
 import Combine
 import MultipeerConnectivity
 
+/// The base type for objects which searches for joinable servers in the network.
+/// 
+/// # Overview
+/// Use in tandem with ``GPGameServerBroadcaster``, to create the cycle of searching and joining servers in the network.
+/// 
+/// # Usage
+/// Treat the ``GPGameClientBrowser`` object as a pair of binoculars, from which you can search for servers in the network.
+/// You can choose to start or stop looking by calling ``startBrowsing(_:)`` and ``stopBrowsing(_:)`` respectively.
+/// 
+/// ```swift
+/// let binoculars = MyBinoculars()    // A class that conforms to GPGameClientBrowserProtocol
+///     binoculars.startBrowsing(self) // Binoculars will now search for joinable servers, and you can see them through the methods of MyBinoculars
+///     binoculars.stopBrowsing(self)   // Binoculars will no longer search for joinable servers
+/// ```
 public typealias GPGameClientBrowser = GPGameClientBrowserProtocol & GPGameClientBrowserSC
 
 public protocol GPGameClientBrowserProtocol {
@@ -88,9 +102,9 @@ extension GPGameClientBrowserSC {
 
 extension GPGameClientBrowserSC {
     
-    public final func requestToJoin ( _ who: MCPeerID ) -> ( _ broadcasterSignature: MCSession ) -> Void {
+    public final func requestToJoin ( _ subject: MCPeerID, payload: Data? = nil, validFor: TimeInterval? = nil ) -> ( _ broadcasterSignature: MCSession ) -> Void {
         return { [weak self] ba in
-            self?.browser?.invitePeer(who, to: ba, withContext: nil, timeout: self?.gameProcessConfiguration.timeout ?? 10)
+            self?.browser?.invitePeer(subject, to: ba, withContext: payload, timeout: validFor ?? self?.gameProcessConfiguration.timeout ?? 20)
         }
     }
     
