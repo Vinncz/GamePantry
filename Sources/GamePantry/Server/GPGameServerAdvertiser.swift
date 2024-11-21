@@ -1,15 +1,57 @@
 import MultipeerConnectivity
 
+/// The base type for objects which advertises a joinable game server.
+/// 
+/// # Overview
+/// Use in tandem with ``GPGameClientBrowser`` to create the discovery-then-join system for multiplayer functionality.
+/// 
+/// ``GPGameServerAdvertiser`` has the responsibility to publicize the availability of a joinable game server to the network. 
+/// 
+/// # Usage
+/// Treat the ``GPGameServerAdvertiser`` object as a torchlight, from which you can toggle the joinable state of the server,
+/// by calling ``startAdvertising(what:on:)`` and ``stopAdvertising(on:)`` respectively.
+/// 
+/// Once self is advertising, the ``GPGameServerAdvertiser`` will listen for incoming requests to join the game server.
+/// 
+/// ```swift
+/// let advertiserObj = MyGameServerAdvertiser() // A class that conforms to GPGameServerAdvertiserProtocol
+/// let browserObj    = MyGameClientBrowser()    // A class that conforms to GPGameClientBrowserProtocol
+/// 
+/// advertiserObj.startAdvertising (what:
+///    ["gameName": "MyGame", "gameMode": "Multiplayer"],
+///    on: advertiserObj
+/// )
+/// 
+/// browserObj.startBrowsing(on: browserObj)
+/// ```
 public typealias GPGameServerAdvertiser = GPGameServerAdvertiserSC & GPGameServerAdvertiserProtocol
 
+/// The base protocol for objects which advertises a joinable game server.
+/// 
+/// # Overview
+/// Use the ``GPGameServerAdvertiserProtocol`` to facade the methods of ``MCNearbyServiceAdvertiserDelegate`` to a readable and more contextual form.
+/// 
+/// - Warning: Refrain from implementing this protocol outside the environment of GamePantry framework. This was made public since Swift limits public typealiases to only reference types which are public.
 public protocol GPGameServerAdvertiserProtocol {
     
+    /// Called when self is unable to advertise the game server.
     func unableToAdvertise ( error: Error )
     
+    /// Called when self gets a join request from a peer.
     func didReceiveAdmissionRequest ( from peer: MCPeerID, withContext: Data?, admitterObject: @escaping (Bool, MCSession?) -> Void )
     
 }
 
+/// The base class for objects which advertises a joinable game server.
+/// 
+/// # Overview
+/// Abstracts the implementation of ``MCNearbyServiceAdvertiserDelegate``, and maps the methods related to incoming requests to join the game server to the methods of a given ``GPGameServerAdvertiserProtocol`` object through initialization.
+/// 
+/// # Usage
+/// Treat the ``GPGameServerAdvertiser`` object as a torchlight, from which you can toggle the joinable state of the server,
+/// by calling ``startAdvertising(what:on:)`` and ``stopAdvertising(on:)`` respectively.
+/// 
+/// - Warning: Refrain from implementing this class outside the environment of GamePantry framework. This was made public since Swift limits public typealiases to only reference types which are public.
 open class GPGameServerAdvertiserSC : NSObject, ObservableObject {
     
     private var service : AdvertiserService?

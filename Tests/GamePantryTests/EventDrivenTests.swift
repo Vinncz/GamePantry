@@ -141,7 +141,7 @@ struct EventDrivenTests {
         // server receives the event in form of Data
         let decodedData = fromData(data: beventAsData)!
         
-        // GPGameEventListener should be able to reconstruct it back to the complete GPEvent from
+        // GPNetworkListener should be able to reconstruct it back to the complete GPEvent from
         let reconstructedBevent = GPBlacklistedEvent.construct(from: decodedData)
         
         // Check if all attributes are correct

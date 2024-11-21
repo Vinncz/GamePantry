@@ -1,5 +1,6 @@
 import MultipeerConnectivity
 
+/// A request to join a game, readable by the game server.
 public struct GPGameJoinRequest : Hashable {
     
     public var requestee      : MCPeerID

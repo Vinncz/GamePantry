@@ -1,5 +1,8 @@
+/// A data transport object, which is sent by the server, to tell that server cannot be public.
+/// It marks that no one can discover the server in the network.
 public struct GPUnableToAdvertiseEvent : GPEvent, GPSendableEvent, GPReceivableEvent {
     
+    /// The reason why the server is unable to be discovered.
     public let cause          : String
     
     public let id             : String = "GPUnableToAdvertiseEvent"

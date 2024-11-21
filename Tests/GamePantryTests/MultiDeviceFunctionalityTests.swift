@@ -175,8 +175,8 @@ extension MultiDeviceFunctionalityTests {
         
         var gameProcessConfig: GamePantry.GPGameProcessConfiguration
         var browser: any GamePantry.GPGameClientBrowser
-        var eventListener: any GamePantry.GPGameEventListener
-        var eventBroadcaster: GamePantry.GPGameEventBroadcaster
+        var eventListener: any GamePantry.GPNetworkListener
+        var eventBroadcaster: GamePantry.GPNetworkBroadcaster
         
         let myself = MCPeerID(displayName: "MockTestClient")
         
@@ -185,7 +185,7 @@ extension MultiDeviceFunctionalityTests {
             
             let browser = MockGameClientBrowser(serves: myself, serviceType: configuration.serviceType)
             let eventListener = MockGameEventListener()
-            let eventBroadcaster = GPGameEventBroadcaster(serves: myself).pair(eventListener)
+            let eventBroadcaster = GPNetworkBroadcaster(serves: myself).pair(eventListener)
             
             self.browser = browser
             self.eventListener = eventListener
@@ -198,8 +198,8 @@ extension MultiDeviceFunctionalityTests {
         
         var advertiserService: any GamePantry.GPGameServerAdvertiser
         var gameProcessConfig: GamePantry.GPGameProcessConfiguration
-        var eventListener: any GamePantry.GPGameEventListener
-        var eventBroadcaster: GamePantry.GPGameEventBroadcaster
+        var eventListener: any GamePantry.GPNetworkListener
+        var eventBroadcaster: GamePantry.GPNetworkBroadcaster
         
         let myself = MCPeerID(displayName: "MockTestServer")
         
@@ -208,7 +208,7 @@ extension MultiDeviceFunctionalityTests {
             
             let advertiserService = MockGameServerAdvertiser(serves: myself, serviceType: configuration.serviceType)
             let eventListener = MockGameEventListener()
-            let eventBroadcaster = GPGameEventBroadcaster(serves: myself).pair(eventListener)
+            let eventBroadcaster = GPNetworkBroadcaster(serves: myself).pair(eventListener)
             
             self.advertiserService = advertiserService
             self.eventListener = eventListener
@@ -255,13 +255,13 @@ extension MultiDeviceFunctionalityTests {
         
     }
     
-    class MockGameEventBroadcaster : GPGameEventBroadcaster {
+    class MockGameEventBroadcaster : GPNetworkBroadcaster {
         
         
         
     }
     
-    class MockGameEventListener : GPGameEventListener {
+    class MockGameEventListener : GPNetworkListener {
         
         func heardNews(of: MCPeerID, to: MCSessionState) {
             print("heard news of \(of)'s new state \(to)")

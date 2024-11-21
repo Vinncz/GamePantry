@@ -88,9 +88,9 @@ extension GPGameClientBrowserSC {
 
 extension GPGameClientBrowserSC {
     
-    public final func requestToJoin ( _ who: MCPeerID ) -> ( _ broadcasterSignature: MCSession ) -> Void {
+    public final func requestToJoin ( _ subject: MCPeerID, payload: Data? = nil, validFor: TimeInterval? = nil ) -> ( _ broadcasterSignature: MCSession ) -> Void {
         return { [weak self] ba in
-            self?.browser?.invitePeer(who, to: ba, withContext: nil, timeout: self?.gameProcessConfiguration.timeout ?? 10)
+            self?.browser?.invitePeer(subject, to: ba, withContext: payload, timeout: validFor ?? self?.gameProcessConfiguration.timeout ?? 20)
         }
     }
     

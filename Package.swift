@@ -16,6 +16,7 @@ let package = Package(
         .target(
             name: "GamePantry",
             sources: [
+                "ValueTypes/Errors/GPError.swift",
                 "Mediator/GPMediator.swift",
                 "Mediator/GPMediated.swift",
                 "Mediator/GPMediatedType.swift",
@@ -49,8 +50,8 @@ let package = Package(
                 "GPGameProcess.swift",
                 "GPGameTemporaryStorage.swift",
                 "GPGameProcessConfiguration.swift",
-                "GPGameEventBroadcaster.swift",
-                "GPGameEventListener.swift",
+                "GPNetworkBroadcaster.swift",
+                "GPNetworkListener.swift",
                 "GPNetworkManager.swift",
                 "Client/GPGameClient.swift",
                     "Client/GPGameClientNetworkManager.swift",
