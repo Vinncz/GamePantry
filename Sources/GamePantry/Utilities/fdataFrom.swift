@@ -2,7 +2,7 @@
 /// 
 /// - Parameter transformer: A closure that returns a dictionary of strings.
 /// - Returns: A JSON data object.
-public func dataFrom ( transformer: () -> [String: String] ) -> Data? {
+public func dataFrom ( _ transformer: () -> [String: String] ) -> Data? {
     
     let mappedData = transformer()
     
