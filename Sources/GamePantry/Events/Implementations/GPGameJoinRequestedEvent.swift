@@ -1,5 +1,6 @@
 public struct GPGameJoinRequestedEvent : GPEvent, GPSendableEvent, GPReceivableEvent {
     
+    public let subjectId      : String
     public let subjectName    : String
     
     public let id             : String = "GPGameJoinRequestedEvent"
@@ -8,8 +9,9 @@ public struct GPGameJoinRequestedEvent : GPEvent, GPSendableEvent, GPReceivableE
     
     public var payload        : [String: Any] = [:]
     
-    public init ( requestedBy: String ) {
-        subjectName = requestedBy
+    public init ( requestedBy id: String, named name: String ) {
+        subjectId   = id
+        subjectName = name
     }
     
 }
@@ -18,6 +20,7 @@ extension GPGameJoinRequestedEvent {
     
     public enum PayloadKeys : String, CaseIterable {
         case eventId     = "eventId",
+             subjectId   = "subjectId",
              subjectName = "subjectName"
     }
     
@@ -33,6 +36,7 @@ extension GPGameJoinRequestedEvent {
         dataFrom {
             [
                 PayloadKeys.eventId.rawValue     : self.id,
+                PayloadKeys.subjectId.rawValue   : self.subjectId,
                 PayloadKeys.subjectName.rawValue : self.subjectName
             ]
         } ?? Data()
@@ -45,12 +49,13 @@ extension GPGameJoinRequestedEvent {
     public static func construct ( from payload: [String: Any] ) -> GPGameJoinRequestedEvent? {
         guard 
             "GPGameJoinRequestedEvent" == payload[PayloadKeys.eventId.rawValue] as? String,
+            let subjectId   = payload[PayloadKeys.subjectId.rawValue] as? String,
             let subjectName = payload[PayloadKeys.subjectName.rawValue] as? String 
         else {
             return nil
         }
         
-        return GPGameJoinRequestedEvent(requestedBy: subjectName)
+        return GPGameJoinRequestedEvent(requestedBy: subjectId, named: subjectName)
     }
     
 }
